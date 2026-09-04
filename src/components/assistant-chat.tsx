@@ -116,7 +116,10 @@ export function AssistantChat() {
             <Trash2 size={16} />
           </button>
         </div>
-        <Notice>Demo mode — prepared responses, not a live AI model. No OpenAI connection or API key is used.</Notice>
+        <Notice>
+          Demo mode — prepared responses, not a live AI model. No OpenAI
+          connection or API key is used.
+        </Notice>
         <div className="chat-messages" aria-live="polite" aria-busy={busy}>
           {!messages.length ? (
             <div className="chat-welcome">
@@ -215,7 +218,8 @@ export function AssistantChat() {
           </div>
         </form>
         <p className="chat-disclaimer">
-          Prepared examples only. For feedback on your own writing, ask your teacher.
+          Prepared examples only. For feedback on your own writing, ask your
+          teacher.
         </p>
         {tracking && <p className="chat-disclaimer">{tracking}</p>}
       </section>
@@ -246,7 +250,9 @@ export function AssistantChat() {
           </p>
         </div>
         <p className="privacy-note">
-          Your messages are processed by this app to select prepared responses. They are not sent to OpenAI or stored in the research database. Please avoid personal information.
+          Your messages are processed by this app to select prepared responses.
+          They are not sent to OpenAI or stored in the research database. Please
+          avoid personal information.
         </p>
       </aside>
     </div>

@@ -50,3 +50,9 @@ No live Supabase project, OpenAI credentials/model, or Vercel deployment credent
 - The project has not been published to Vercel.
 
 Use README.md to configure those services, then run the same-browser Before → practice → After flow and confirm the resulting aggregate. No local test fixture or demo score is presented as real research evidence.
+
+## Demo-mode update
+
+The OpenAI provider integration has now been replaced by a visibly labeled scripted tutor. Previous live-AI configuration requirements and unavailable-AI observations above describe the original version and are superseded by this update. Demo replies are never stored in `ai_usage` and do not unlock the After assessment. New tests cover prepared corrections, vocabulary, grammar follow-up, speaking progression, and honest unsupported-input responses.
+
+Supabase configuration was found in `.env.example` with a publishable key in the service-role field. Settings were moved into ignored `.env.local`, the public key was preserved separately, and a random session signing secret was generated. A read-only, zero-row request reached the supplied project but returned `PGRST205` for `anonymous_sessions`. A valid server secret key is still needed to distinguish missing migration from API visibility/privilege restrictions. No participant records were fetched or written.

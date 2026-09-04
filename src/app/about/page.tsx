@@ -66,7 +66,10 @@ export default function Page() {
             </p>
             <p>
               Practice answers are scored; the database stores answer
-              correctness and scores. The assistant uses prepared demo responses. Messages are processed by this application, are not sent to OpenAI, and are not saved in the research database. Demo replies are excluded from real AI usage.
+              correctness and scores. The assistant uses prepared demo
+              responses. Messages are processed by this application, are not
+              sent to OpenAI, and are not saved in the research database. Demo
+              replies are excluded from real AI usage.
             </p>
             <p>
               Browser identifiers are not verified people. Clearing cookies or

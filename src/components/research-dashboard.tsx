@@ -63,7 +63,12 @@ export function ResearchDashboard() {
   const data = hasReal ? summary.skills : demo ? demoResearch : [];
   return (
     <>
-      <Notice>The assistant currently uses scripted demo responses. This setup can demonstrate platform practice, but does not provide evidence about learning with real ChatGPT. Demo replies are excluded from AI usage and do not unlock the After test.</Notice>
+      <Notice>
+        The assistant currently uses scripted demo responses. This setup can
+        demonstrate platform practice, but does not provide evidence about
+        learning with real ChatGPT. Demo replies are excluded from AI usage and
+        do not unlock the After test.
+      </Notice>
       <div className="research-toolbar">
         <span className="tag">
           <span className="status-dot" />

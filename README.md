@@ -1,10 +1,10 @@
 # English Lab
 
-An educational research application for **“The Importance of ChatGPT in Learning English.”** Built with Next.js 16 App Router, React, strict TypeScript, Tailwind CSS, Lucide icons, Recharts, Zod, Supabase PostgreSQL, and the server-side OpenAI SDK.
+An educational research application for **“The Importance of ChatGPT in Learning English.”** Built with Next.js 16 App Router, React, strict TypeScript, Tailwind CSS, Lucide icons, Recharts, Zod, Supabase PostgreSQL, and a scripted demo tutor.
 
 ## Run locally
 
-Prerequisites: Node.js 22.13+ (tested with Node 24), npm, and—when enabling live services—a Supabase project and an OpenAI API project with billing/access to a Responses API model.
+Prerequisites: Node.js 22.13+ (tested with Node 24), npm, and—when enabling live services—a Supabase project with a server-side secret key.
 
 ```sh
 npm install
@@ -12,7 +12,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Open the local URL printed by Next.js. Without credentials, educational pages, speaking prompts, prompt copying, and server-checked practice work. Practice explicitly reports that results were not saved; assessments remain disabled; research has an empty state and an optional **labeled demo chart**; the assistant reports unavailability. There are no simulated AI replies or invented live statistics.
+Open the local URL printed by Next.js. Without credentials, educational pages, speaking prompts, prompt copying, and server-checked practice work. Practice explicitly reports that results were not saved; assessments remain disabled; research has an empty state and an optional **labeled demo chart**; the assistant provides clearly labeled prepared demo replies. There are no live AI calls or invented live statistics.
 
 ## Environment variables
 
@@ -23,8 +23,6 @@ All application credentials stay on the server. No `NEXT_PUBLIC_*` variables or 
 | `SUPABASE_URL`              | Supabase project URL, from project settings.                                                                                                         |
 | `SUPABASE_SERVICE_ROLE_KEY` | Server-only service-role key. Never use it in client code.                                                                                           |
 | `SESSION_SECRET`            | At least 32 random characters; required alongside Supabase configuration for durable signed anonymous cookies. Generate with `openssl rand -hex 32`. |
-| `OPENAI_API_KEY`            | API project key, kept server-side.                                                                                                                   |
-| `OPENAI_MODEL`              | A Responses API model available to your project; explicitly configure one appropriate to your cost/latency needs.                                    |
 | `APP_URL`                   | Optional canonical origin, such as `https://your-project.vercel.app`. Recommended in production; must match the URL the user visits.                 |
 
 Never commit `.env.local`. Restart the development server after changing environment values. Do not paste secrets into project source or client code. In development without a session secret, a temporary signing key is used and no database writes are enabled; these anonymous cookies are not durable across server restarts.
@@ -57,15 +55,21 @@ Actual research records are maintained through the protected Supabase project da
 
 The grouped chart uses actual matched database records as soon as a pair exists; demo values are never mixed with those records. The database function `research_summary()` computes aggregate metrics, so the browser does not fetch entire tables.
 
-## OpenAI setup
+## Demo assistant (no OpenAI account or key)
 
-1. Create an API key in your OpenAI project and set an appropriate project spending limit.
-2. Configure `OPENAI_API_KEY` and `OPENAI_MODEL` on the server.
-3. Open **AI Assistant** and try “Correct my sentence: I go to school yesterday.”
+The assistant intentionally uses deterministic, prepared responses from `src/lib/demo-tutor.ts`. `/api/ai` validates input and returns `{ mode: "demo", tracked: false }`; it never contacts an AI provider. The OpenAI SDK and its environment variables have been removed.
 
-The integration follows the [official Responses API](https://developers.openai.com/api/reference/responses/create): browser → `/api/ai` → OpenAI → browser. It sends at most eight recent messages, caps each message at 2,000 characters and output at 600 tokens, sets `store: false`, uses a 30-second provider timeout, and disables automatic SDK retries. The tutor instruction is in `src/lib/tutor.ts`. Availability and output quality depend on your configured model and API project. OpenAI’s own retention policies may still apply; `store: false` is not a zero-retention guarantee.
+Supported activities include the sample past-tense correction, curated mistake corrections, a Present Perfect explanation and follow-up, technology/travel vocabulary, and sequential speaking questions. Unknown requests receive a clear explanation of the demo limits. Arbitrary paragraphs are not falsely marked as reviewed. The UI labels the demo before sending and on assistant messages.
 
-Limits: eight AI requests per minute per browser and 150 per hour per running server process. With Supabase connected, the atomic database budget additionally permits up to 20 attempts per browser per UTC hour and 150 globally per UTC day across server instances. Failed provider requests consume a reserved budget slot. The per-process limiter alone is not a distributed defense. Rotating cookies can bypass browser limits; the global database budget bounds total requests. A cost budget is not a precise dollar cap—also configure provider spending controls.
+Messages go only to this application's server and are not persisted. Demo responses are not inserted into `ai_usage`, do not consume provider budgets, and do not unlock the After assessment. Complete a saved practice quiz for that step. Existing genuine historical AI records remain intact. The old AI metadata/budget tables remain for compatibility, but the demo does not write to them.
+
+This version can demonstrate the product and platform-practice experiment. Its scripted assistant is not evidence about the effects of real ChatGPT; the research page explicitly states that limitation.
+
+### Supabase key troubleshooting
+
+Put real settings in `.env.local`, never `.env.example`. Next.js does not load `.env.example`.
+
+`SUPABASE_SERVICE_ROLE_KEY` accepts a server-side secret key (`sb_secret_...`) or a legacy service-role key. A publishable key (`sb_publishable_...`) cannot perform this application's protected database operations. See [Supabase API key roles](https://supabase.com/docs/guides/getting-started/api-keys). Keep the table protections enabled; do not make research writes public to work around a missing server key.
 
 ## Research methodology and integrity
 
@@ -125,10 +129,10 @@ TEST_BASE_URL=http://127.0.0.1:3000 npm test
 2. Select the Next.js preset and Node.js 22 or newer. Use `npm run build` and the default Next.js output; this app is not a static export.
 3. Apply the Supabase migration before enabling research workflows.
 4. Set the server environment variables in Vercel. Set `APP_URL` to the production origin or leave it unset for deployments with different preview origins; in that case requests must match the incoming Host header.
-5. Deploy. Check the assistant, save one practice session, then complete the Before → practice → After flow in the same browser. Inspect saved records and compare the dashboard against them.
+5. Deploy. Check the demo assistant, save one practice session, then complete the Before → practice → After flow in the same browser. Inspect saved records and compare the dashboard against them.
 
 No separate backend, Redis, Docker, or custom domain is required. Supabase access uses HTTPS, not a long-lived database socket. Deployment credentials and a live project are required to publish; this repository does not provision external services automatically.
 
 ## Suggested presentation flow
 
-Home → Learn → AI Assistant correction → Practice feedback → Prompts copy → Speaking topic → Research Before/After and methodology → About and conclusion. Use real research results only after collecting them; otherwise select the explicitly labeled example chart and explain that data collection is pending.
+Home → Learn → Demo assistant correction → Practice feedback → Prompts copy → Speaking topic → Research Before/After and methodology → About and conclusion. Use real research results only after collecting them; otherwise select the explicitly labeled example chart and explain that data collection is pending.
