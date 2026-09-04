@@ -1,0 +1,86 @@
+export const speakingTopics = [
+  {
+    name: "My Family",
+    level: "A1–A2",
+    description: "The people who make you feel at home.",
+    questions: [
+      "Who is in your family?",
+      "What do you enjoy doing together?",
+      "Who do you usually talk to when you need help?",
+      "What is a family tradition you enjoy?",
+      "How do family members help each other?",
+    ],
+  },
+  {
+    name: "My School",
+    level: "A1–A2",
+    description: "A familiar place. Plenty to talk about.",
+    questions: [
+      "What is your favourite subject, and why?",
+      "What does a typical school day look like?",
+      "What do you do during breaks?",
+      "What would you like to change about your school?",
+      "What makes a good teacher?",
+    ],
+  },
+  {
+    name: "My Hobbies",
+    level: "A1–A2",
+    description: "Talk about what makes your day.",
+    questions: [
+      "What do you like doing in your free time?",
+      "When did you start this hobby?",
+      "Do you prefer hobbies alone or with friends?",
+      "What new hobby would you like to try?",
+      "Why are hobbies important?",
+    ],
+  },
+  {
+    name: "Travelling",
+    level: "A2–B1",
+    description: "New places, new conversations.",
+    questions: [
+      "Where would you like to travel?",
+      "How do you prefer to travel, and why?",
+      "What should you pack for a short trip?",
+      "Describe a place you have visited.",
+      "What can we learn from visiting other places?",
+    ],
+  },
+  {
+    name: "My Future Profession",
+    level: "A2–B1",
+    description: "Imagine where your skills could take you.",
+    questions: [
+      "What job would you like to do?",
+      "Why does this profession interest you?",
+      "What skills would you need?",
+      "How might English help in this job?",
+      "What can you do now to prepare?",
+    ],
+  },
+  {
+    name: "Technology",
+    level: "B1–B2",
+    description: "The tools that change how we learn.",
+    questions: [
+      "How often do you use technology?",
+      "What technology do you use for studying?",
+      "How can AI help students?",
+      "What are the advantages and disadvantages of technology?",
+      "How could technology change education?",
+    ],
+  },
+  {
+    name: "Environment",
+    level: "B1–B2",
+    description: "Small choices. A shared future.",
+    questions: [
+      "What environmental problems affect your area?",
+      "How can students reduce waste?",
+      "Why is protecting nature important?",
+      "Should people use public transport more often?",
+      "What environmental change would you like to see in the future?",
+    ],
+  },
+];
