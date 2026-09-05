@@ -1,0 +1,54 @@
+# Local classroom sandbox. The helper requests loopback and reports actual Docker bindings.
+# Docker Desktop may expose published ports to the LAN: see docs/TEST_CREDENTIALS.ru.md.
+# Supabase CLI is pinned in package-lock.json. No hosted project is linked here.
+project_id = "english-lab-classroom"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 17
+health_timeout = "2m"
+
+[db.migrations]
+enabled = true
+schema_paths = []
+
+[db.seed]
+enabled = false
+
+[db.pooler]
+enabled = false
+
+[studio]
+enabled = true
+port = 54323
+api_url = "http://127.0.0.1"
+
+# Auth supplies the API keys; English Lab itself has no account login.
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+additional_redirect_urls = []
+enable_signup = false
+
+[local_smtp]
+enabled = false
+
+[realtime]
+enabled = false
+
+[storage]
+enabled = false
+
+[analytics]
+enabled = false
+
+[edge_runtime]
+enabled = false

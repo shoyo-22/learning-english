@@ -6,3 +6,8 @@ node_modules/
 playwright-report/
 test-results/
 .idea/
+
+# Local Supabase state and classroom distribution archives
+supabase/.temp/
+supabase/.branches/
+deliverables/

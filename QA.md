@@ -2,6 +2,17 @@
 
 Checked locally on 5 September 2026.
 
+## Classroom documentation and reproducible local setup
+
+- Added Russian installation, student, teacher, and local test-credential guides, with a shared documentation index. Checked relative document targets and all documented `npm run` names. Installation covers Windows, macOS, and Linux; executable checks below ran on macOS, not Windows/Linux.
+- Added Node 24 guidance, pinned Supabase CLI 2.116.0, a minimal local Supabase configuration, and cross-platform Node helpers for demo setup, local setup, start, and stop. Existing private/manual/cloud `.env.local` files are refused rather than overwritten. Tests cover preservation, cloud/key rejection, symlink refusal, and stable session signing across local mode changes.
+- Verified `npm ci` from scratch in a separate source copy with its own dependency installation: 500 packages installed, audit reported zero vulnerabilities. No hosted environment file was copied. Built the production application successfully from that copy with local database settings; all UI/API routes compiled. Strict TypeScript and ESLint passed in the working repository.
+- Ran `setup:local` against a separate Docker-backed Supabase instance. Both migrations applied, local keys were obtained automatically, and `db:check` passed all seven tables plus `research_summary`. No cloud project was linked or used.
+- Against that isolated app at `localhost:3100`, completed one synthetic Before → saved practice → After flow. Verified rejection of After before the required steps, duplicate-practice idempotency, and exactly one paired aggregate. After `db:local:stop` and `db:local:start`, the same browser cookie retained both assessments and one practice run; `db:check` still passed. These synthetic records remain only in the stopped local test volume, not the real study database.
+- Checked switching the managed configuration back to demo, stopping the local database, and starting the production app without database credentials. Connected-mode and demo-mode HTTP suites each passed 20 tests with the opposite storage-mode test intentionally skipped. Each suite includes all eight pages in en/ru/kk. The ordinary offline suite passed 18 tests with three optional HTTP checks skipped. Also started `dev:local` on the isolated copy and verified its home page and demo session API.
+- Docker Desktop 29.7.2 on macOS ignored the custom bridge network's loopback default and published Supabase ports on IPv4/IPv6 network interfaces. Reproduced with a separate empty port probe, then stopped the probe. The helper reports actual bindings and explicitly warns when ports are exposed; the guides describe this limitation and restrict that test workflow to trusted computers/networks. No global Docker/firewall settings were changed. The Next.js local scripts bind to localhost. All created local Supabase services were stopped after QA, preserving their test volume.
+- The user's existing development server and hosted Supabase configuration/data were not changed. Distribution is generated from the committed source using `git archive`, excluding local environment files, dependency/build directories, Git metadata, and test data.
+
 ## Automated checks
 
 - Strict TypeScript: passed.

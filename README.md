@@ -2,17 +2,31 @@
 
 An educational research application for **“The Importance of ChatGPT in Learning English.”** Built with Next.js 16 App Router, React, strict TypeScript, Tailwind CSS, shadcn/ui (Radix), Lucide icons, Recharts, Zod, Supabase PostgreSQL, and a scripted demo tutor.
 
+**Документация на русском:** [начать здесь](docs/README.ru.md) · [установка Windows/macOS/Linux](docs/INSTALLATION.ru.md) · [ученику](docs/STUDENT_GUIDE.ru.md) · [учителю](docs/TEACHER_GUIDE.ru.md) · [локальные тестовые доступы](docs/TEST_CREDENTIALS.ru.md).
+
 ## Run locally
 
-Prerequisites: Node.js 22.13+ (tested with Node 24), npm, and—when enabling live services—a Supabase project with a server-side secret key.
+Prerequisites: Node.js 22.13+ (recommended: **24 LTS**, also specified in `.nvmrc`) and npm. Docker is needed only for the full local database mode. No OpenAI account, student/teacher login, or hosted Supabase project is needed for either local mode.
 
 ```sh
-npm install
-cp .env.example .env.local
-npm run dev
+npm ci
+npm run setup:demo
+npm run dev:local
 ```
 
 Open the local URL printed by Next.js. Without credentials, educational pages, speaking prompts, prompt copying, and server-checked practice work. Practice explicitly reports that results were not saved; assessments remain disabled; research has an empty state and an optional **labeled demo chart**; the assistant provides clearly labeled prepared demo replies. There are no live AI calls or invented live statistics.
+
+For saved practice and Before/After assessments on your own computer, start Docker and run:
+
+```sh
+npm run setup:local
+npm run db:check
+npm run dev:local
+```
+
+Stop any existing Next.js process before changing modes. Setup uses the pinned Supabase CLI, applies local migrations, and writes the local instance's API key into `.env.local` without printing it. It refuses to overwrite an existing manually configured or hosted environment: use a separate clean project copy. The public demo signing string is for local practice only. Local setup never links or logs into a hosted project.
+
+On later days, use `npm run db:local:start` followed by `npm run dev:local`. Stop Next.js with Ctrl+C and run `npm run db:local:stop`; database volumes are retained. Local Studio is at `http://127.0.0.1:54323`. See the [installation guide](docs/INSTALLATION.ru.md) for platform prerequisites, local networking, troubleshooting, and cloud setup. Each student's local database is independent; class-wide research requires one shared server/database.
 
 ## Environment variables
 
@@ -115,7 +129,7 @@ npm run typecheck
 npm run lint
 npm test
 npm run build
-npm start
+npm run start:local
 ```
 
 `npm test` runs scoring, bank coverage, input validation, and PostgreSQL integration tests using an isolated in-memory PGlite database. The migration itself is executed in those tests, including RLS privileges, first-submission preservation, missing-Before/learning rejection, atomic rollback, idempotent practice saves, matched aggregates, and AI budgets. Recovery tests also cover empty, partially initialized, and populated schemas, repeated application, compatibility failure rollback, and the reusable SQL smoke test. These tests do not connect to your real database.
@@ -123,14 +137,14 @@ npm start
 Optional API checks against a running, unconfigured local server:
 
 ```sh
-TEST_BASE_URL=http://127.0.0.1:3000 npm test
+TEST_BASE_URL=http://localhost:3000 npm test
 ```
 
 For a configured local server, use the read-only connected check instead:
 
 ```sh
 npm run db:check
-TEST_BASE_URL=http://127.0.0.1:3000 TEST_STORAGE=connected npm test
+TEST_BASE_URL=http://localhost:3000 TEST_STORAGE=connected npm test
 ```
 
 The connected HTTP test reads `/api/research`; it does not create synthetic participants or scores. The unavailable-storage HTTP test is skipped in this mode.
@@ -143,9 +157,9 @@ The connected HTTP test reads `/api/research`; it does not create synthetic part
 2. Select the Next.js preset and Node.js 22 or newer. Use `npm run build` and the default Next.js output; this app is not a static export.
 3. Apply the Supabase migration before enabling research workflows.
 4. Set the server environment variables in Vercel. Set `APP_URL` to the production origin or leave it unset for deployments with different preview origins; in that case requests must match the incoming Host header.
-5. Deploy. Check the demo assistant, save one practice session, then complete the Before → practice → After flow in the same browser. Inspect saved records and compare the dashboard against them.
+5. Deploy. Check the demo assistant and run `db:check` using the intended server configuration. Verify the complete Before → practice → After write flow on a separate staging/test database. In the real research database, lasting submissions must come from genuine participation; do not create fictional pairs as a deployment check.
 
-No separate backend, Redis, Docker, or custom domain is required. Supabase access uses HTTPS, not a long-lived database socket. Deployment credentials and a live project are required to publish; this repository does not provision external services automatically.
+The hosted application needs no separate backend, Redis, Docker, or custom domain. Hosted Supabase access uses HTTPS, not a long-lived database socket. Docker is used only by the optional local Supabase workflow. Deployment credentials and a live project are required to publish; this repository does not provision external services automatically.
 
 ## Suggested presentation flow
 
