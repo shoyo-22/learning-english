@@ -39,20 +39,23 @@ Using the app’s browser preview:
 - Added the Next.js smooth-scroll declaration to avoid navigation warnings.
 - Increased mobile caption sizing and touch targets, and kept the conversation’s example label visible on small screens.
 
-## External-service limitations
+## External-service validation scope
 
-No live Supabase project, OpenAI credentials/model, or Vercel deployment credentials were provided. Therefore:
-
-- No real participant records were created or modified.
-- The Supabase-hosted migration and real service-role transport still require a connected-project smoke test.
-- Successful live OpenAI generation, its loading duration, and provider failure behavior cannot be certified from the unavailable-service test.
-- The complete successful assessment UI-to-hosted-database journey must be smoke-tested after configuration; its scoring and PostgreSQL transaction logic pass local tests.
-- The project has not been published to Vercel.
-
-Use README.md to configure those services, then run the same-browser Before → practice → After flow and confirm the resulting aggregate. No local test fixture or demo score is presented as real research evidence.
+Supabase is now configured and its recovery migration was applied through the authenticated project SQL Editor on 5 September 2026. Hosted verification is detailed below. A complete assessment submission through the browser was not performed against the live research database; successful writes were tested in a transaction that rolled back. The project has not been published to Vercel. The assistant is a scripted demo, so live OpenAI generation is outside this version’s scope.
 
 ## Demo-mode update
 
 The OpenAI provider integration has now been replaced by a visibly labeled scripted tutor. Previous live-AI configuration requirements and unavailable-AI observations above describe the original version and are superseded by this update. Demo replies are never stored in `ai_usage` and do not unlock the After assessment. New tests cover prepared corrections, vocabulary, grammar follow-up, speaking progression, and honest unsupported-input responses.
 
-Supabase configuration was found in `.env.example` with a publishable key in the service-role field. Settings were moved into ignored `.env.local`, the public key was preserved separately, and a random session signing secret was generated. A read-only, zero-row request reached the supplied project but returned `PGRST205` for `anonymous_sessions`. A valid server secret key is still needed to distinguish missing migration from API visibility/privilege restrictions. No participant records were fetched or written.
+Supabase configuration was found in `.env.example` with a publishable key in the service-role field. Settings were moved into ignored `.env.local`, the public key was preserved separately, and a random session signing secret was generated. A read-only, zero-row request reached the supplied project but returned `PGRST205` for `anonymous_sessions`. The user subsequently supplied a valid server secret key. The investigation and resolution are recorded below. No participant records were fetched or written.
+
+## Supabase recovery verification
+
+- The server secret was valid; SQL catalog inspection confirmed that the application tables and RPCs had not been installed. Earlier HEAD-only responses were not reliable evidence of table existence. The new diagnostic uses GET with `limit(0)` and explicit columns.
+- Applied `202609050002_restore_schema_and_rpc.sql` successfully to the hosted project. All seven tables and four server RPCs are installed, RLS is enabled, and browser roles cannot access them. Existing migrations were preserved.
+- `npm run db:check` passed for all tables and `research_summary` through the server secret key. It prints neither credentials nor participant rows.
+- Ran the rollback smoke test in the hosted SQL Editor as `service_role`: passed permission checks, rejection of After without Before/practice, immutable first scores, duplicate quiz retry, and matched-pair aggregation. All synthetic research rows were rolled back.
+- The local application’s `/api/research` returned HTTP 200 with `source: live`. The connected HTTP test is read-only and separate from the unavailable-storage test.
+- In-memory tests additionally exercised recovery from empty, tables-only, and complete schemas, preserved existing assessments, applied recovery twice, and rejected an incompatible schema atomically. The reusable SQL smoke test also runs in these tests, with before/after aggregate equality proving fixture rollback.
+- Final checks: TypeScript, ESLint, and production build passed. Connected test run: 13 passed, 1 intentionally skipped (the unavailable-storage HTTP scenario).
+- Browser verification: Research displayed “LIVE DATABASE · ANONYMOUS RECORDS”, zero completed pairs, and an enabled Start Before Test button. No assessment was submitted.

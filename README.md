@@ -21,7 +21,7 @@ All application credentials stay on the server. No `NEXT_PUBLIC_*` variables or 
 | Variable                    | Purpose                                                                                                                                              |
 | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `SUPABASE_URL`              | Supabase project URL, from project settings.                                                                                                         |
-| `SUPABASE_SERVICE_ROLE_KEY` | Server-only service-role key. Never use it in client code.                                                                                           |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server-only `sb_secret_...` key (or legacy service-role key). Never use it in client code.                                                           |
 | `SESSION_SECRET`            | At least 32 random characters; required alongside Supabase configuration for durable signed anonymous cookies. Generate with `openssl rand -hex 32`. |
 | `APP_URL`                   | Optional canonical origin, such as `https://your-project.vercel.app`. Recommended in production; must match the URL the user visits.                 |
 
@@ -31,9 +31,10 @@ Never commit `.env.local`. Restart the development server after changing environ
 
 1. Create a Supabase PostgreSQL project.
 2. Open the SQL Editor with the project owner account.
-3. Run **`supabase/migrations/202609050001_initial.sql`** once against a new database. Alternatively, use the Supabase CLI migration workflow for your linked project (`supabase db push`). The file creates tables, constraints, indexes, Row Level Security, permission grants, and transactional functions.
+3. For a new database, run the files in `supabase/migrations/` in order (or use your linked Supabase CLI migration workflow). If setup is missing, incomplete, or was applied manually, run **`supabase/migrations/202609050002_restore_schema_and_rpc.sql`** as one complete query. This recovery migration creates missing tables, restores the four server functions and permissions, and refreshes the API schema cache. It is transactional, preserves existing rows, can run repeatedly, and aborts on missing or incompatible column types. The original migration remains unchanged. If switching from SQL Editor to CLI-managed migrations, reconcile the migration history before pushing; do not rerun the initial migration against existing tables.
 4. Add the URL, service-role key, and session secret to `.env.local` or your deployment environment.
-5. Restart the app, complete a practice run, and check the Research activity metrics.
+5. Restart the app and run `npm run db:check`. This read-only check verifies all seven tables with zero-row GET requests and the aggregate RPC, without printing credentials or participant records.
+6. For a write smoke test, run the **whole** `supabase/tests/smoke_rollback.sql` in SQL Editor. It checks server permissions, assessment ordering, first-submission preservation, quiz retries, and paired aggregation, then rolls back every fixture row. If execution fails, issue `ROLLBACK` before reusing that SQL connection. Only real study participation should create lasting assessment results.
 
 Tables:
 
@@ -69,7 +70,7 @@ This version can demonstrate the product and platform-practice experiment. Its s
 
 Put real settings in `.env.local`, never `.env.example`. Next.js does not load `.env.example`.
 
-`SUPABASE_SERVICE_ROLE_KEY` accepts a server-side secret key (`sb_secret_...`) or a legacy service-role key. A publishable key (`sb_publishable_...`) cannot perform this application's protected database operations. See [Supabase API key roles](https://supabase.com/docs/guides/getting-started/api-keys). Keep the table protections enabled; do not make research writes public to work around a missing server key.
+`SUPABASE_SERVICE_ROLE_KEY` accepts a server-side secret key (`sb_secret_...`) or a legacy service-role key. A publishable key (`sb_publishable_...`) cannot perform this application's protected database operations. The dashboard’s `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` example is for a browser client. This application accesses Supabase only from server routes, so that public key is not required. The environment variable name `SUPABASE_SERVICE_ROLE_KEY` is retained for compatibility and can hold the modern secret key. See [Supabase API key roles](https://supabase.com/docs/guides/getting-started/api-keys). Keep the table protections enabled; do not make research writes public to work around a missing server key.
 
 ## Research methodology and integrity
 
@@ -113,13 +114,22 @@ npm run build
 npm start
 ```
 
-`npm test` runs scoring, bank coverage, input validation, and PostgreSQL integration tests using an isolated in-memory PGlite database. The migration itself is executed in those tests, including RLS privileges, first-submission preservation, missing-Before/learning rejection, atomic rollback, idempotent practice saves, matched aggregates, and AI budgets. These tests do not connect to your real database.
+`npm test` runs scoring, bank coverage, input validation, and PostgreSQL integration tests using an isolated in-memory PGlite database. The migration itself is executed in those tests, including RLS privileges, first-submission preservation, missing-Before/learning rejection, atomic rollback, idempotent practice saves, matched aggregates, and AI budgets. Recovery tests also cover empty, partially initialized, and populated schemas, repeated application, compatibility failure rollback, and the reusable SQL smoke test. These tests do not connect to your real database.
 
 Optional API checks against a running, unconfigured local server:
 
 ```sh
 TEST_BASE_URL=http://127.0.0.1:3000 npm test
 ```
+
+For a configured local server, use the read-only connected check instead:
+
+```sh
+npm run db:check
+TEST_BASE_URL=http://127.0.0.1:3000 TEST_STORAGE=connected npm test
+```
+
+The connected HTTP test reads `/api/research`; it does not create synthetic participants or scores. The unavailable-storage HTTP test is skipped in this mode.
 
 `npm run format` formats the source. See `QA.md` for the executed checks and external-service validation limits.
 

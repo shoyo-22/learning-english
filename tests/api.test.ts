@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 const base = process.env.TEST_BASE_URL;
 test(
   "local HTTP APIs validate inputs, withhold keys, and fail honestly without credentials",
-  { skip: !base },
+  { skip: !base || process.env.TEST_STORAGE === "connected" },
   async () => {
     const post = (path: string, data: unknown, origin = base!) =>
       fetch(`${base}${path}`, {
@@ -89,5 +89,27 @@ test(
     const research = await fetch(`${base}/api/research`);
     assert.equal(research.status, 503);
     assert.ok(!("summary" in (await research.json())));
+  },
+);
+
+test(
+  "connected research API returns live aggregates without writing fixtures",
+  { skip: !base || process.env.TEST_STORAGE !== "connected" },
+  async () => {
+    const response = await fetch(`${base}/api/research`);
+    assert.equal(response.status, 200);
+    const data = await response.json();
+    assert.equal(data.source, "live");
+    assert.equal(typeof data.summary.pairs, "number");
+    assert.ok(Array.isArray(data.summary.skills));
+    if (data.summary.pairs === 0) {
+      assert.equal(data.summary.before, null);
+      assert.equal(data.summary.after, null);
+      assert.equal(data.summary.difference, null);
+      assert.deepEqual(data.summary.skills, []);
+    } else {
+      assert.equal(data.summary.skills.length, 4);
+      assert.equal(typeof data.summary.difference, "number");
+    }
   },
 );
