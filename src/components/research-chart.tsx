@@ -37,14 +37,31 @@ export default function ResearchChart({ data }: { data: SkillResult[] }) {
             dataKey="skill"
             axisLine={false}
             tickLine={false}
-            tick={{ fill: "#7c8879", fontSize: 10 }}
+            height={44}
+            tick={({ x, y, payload }) => (
+              <text
+                x={x}
+                y={Number(y) + 12}
+                textAnchor="middle"
+                fill="#61716a"
+                fontSize={12}
+              >
+                {String(payload.value)
+                  .split(" ")
+                  .map((word, index) => (
+                    <tspan key={index} x={x} dy={index === 0 ? 0 : 14}>
+                      {word}
+                    </tspan>
+                  ))}
+              </text>
+            )}
             interval={0}
           />
           <YAxis
             domain={[0, 100]}
             axisLine={false}
             tickLine={false}
-            tick={{ fill: "#8b9886", fontSize: 10 }}
+            tick={{ fill: "#61716a", fontSize: 12 }}
             tickFormatter={(v) => `${number(Number(v))}%`}
           />
           <Tooltip
@@ -54,17 +71,21 @@ export default function ResearchChart({ data }: { data: SkillResult[] }) {
               border: "1px solid #e0e8db",
               fontSize: 12,
             }}
+            itemStyle={{ color: "#203d32" }}
             formatter={(v) => `${number(Number(v))}%`}
           />
           <Legend
             iconType="circle"
             iconSize={7}
-            wrapperStyle={{ fontSize: 10, paddingTop: 20 }}
+            wrapperStyle={{ fontSize: 12, paddingTop: 12 }}
+            formatter={(value) => (
+              <span style={{ color: "#445b4f" }}>{value}</span>
+            )}
           />
           <Bar
             dataKey="before"
             name={tr("Before practice")}
-            fill="#cbdac2"
+            fill="#c0cfab"
             radius={[5, 5, 0, 0]}
             maxBarSize={44}
             isAnimationActive={false}
@@ -72,7 +93,7 @@ export default function ResearchChart({ data }: { data: SkillResult[] }) {
           <Bar
             dataKey="after"
             name={tr("After practice")}
-            fill="#27795c"
+            fill="#21654c"
             radius={[5, 5, 0, 0]}
             maxBarSize={44}
             isAnimationActive={false}

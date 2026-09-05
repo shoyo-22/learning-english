@@ -1,4 +1,5 @@
 "use client";
+import { Button } from "./kit/button";
 import { useLocale } from "@/lib/i18n/provider";
 import { useState } from "react";
 import { Check, Copy } from "lucide-react";
@@ -27,10 +28,10 @@ export function CopyButton({
   }
   return (
     <div>
-      <button className="copy-button" onClick={copy}>
+      <Button variant="ghost" className="copy-button" onClick={copy}>
         {status === "copied" ? <Check size={14} /> : <Copy size={14} />}{" "}
         {tr(status === "copied" ? "Copied!" : label)}
-      </button>
+      </Button>
       <span role="status" className="copy-status">
         {tr(
           status === "error"

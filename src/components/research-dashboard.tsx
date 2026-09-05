@@ -1,4 +1,5 @@
 "use client";
+import { Button } from "./kit/button";
 import { useLocale } from "@/lib/i18n/provider";
 import { useCallback, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
@@ -80,10 +81,15 @@ export function ResearchDashboard() {
               : "TRANSPARENT DATA. HONEST CONCLUSIONS.",
           )}
         </span>
-        <button className="text-link" onClick={load} disabled={loading}>
+        <Button
+          variant="ghost"
+          className="text-link"
+          onClick={load}
+          disabled={loading}
+        >
           <RefreshCw size={14} className={loading ? "loading-spin" : ""} />
           {tr("Refresh results")}
-        </button>
+        </Button>
       </div>
       {error && <Notice error>{tr(error)}</Notice>}
       {loading ? (
@@ -208,18 +214,23 @@ export function ResearchDashboard() {
                   "Results will appear after a Before and After test are saved.",
                 )}
               </p>
-              <button
+              <Button
+                variant="ghost"
                 className="button secondary"
                 onClick={() => setDemo(true)}
               >
                 {tr("View labeled demo chart")}
-              </button>
+              </Button>
             </div>
           )}
           {demo && !hasReal && (
-            <button className="text-link" onClick={() => setDemo(false)}>
+            <Button
+              variant="ghost"
+              className="text-link"
+              onClick={() => setDemo(false)}
+            >
               {tr("Hide demo data")}
-            </button>
+            </Button>
           )}
           <p className="chart-note">
             {tr(

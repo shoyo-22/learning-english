@@ -1,6 +1,6 @@
 # English Lab
 
-An educational research application for **“The Importance of ChatGPT in Learning English.”** Built with Next.js 16 App Router, React, strict TypeScript, Tailwind CSS, Lucide icons, Recharts, Zod, Supabase PostgreSQL, and a scripted demo tutor.
+An educational research application for **“The Importance of ChatGPT in Learning English.”** Built with Next.js 16 App Router, React, strict TypeScript, Tailwind CSS, shadcn/ui (Radix), Lucide icons, Recharts, Zod, Supabase PostgreSQL, and a scripted demo tutor.
 
 ## Run locally
 
@@ -104,7 +104,9 @@ supabase/migrations/     Reproducible PostgreSQL schema and aggregate functions
 
 The interface supports English (`en`), Russian (`ru`), and Kazakh (`kk`). The header language selector saves a one-year, same-site preference cookie; English is the default. URLs and anonymous research identifiers stay the same. Pages, metadata, navigation, instructions, errors, charts, and content descriptions are translated. English exercises, answer options, answer explanations, copyable prompts, and demo conversations intentionally remain in English; switching languages does not alter assessment scoring or reset in-progress client state. Teaching passages are marked with `lang="en"` where appropriate.
 
-Translations live in `src/lib/i18n/messages.json`, keyed by the original English message with matching `ru` and `kk` entries. Use complete messages with named placeholders for dynamic values. `getTranslator()` reads the validated cookie in server components; `useLocale()` provides translations to client components. Unknown text falls back to its original value. Cookie-dependent pages render per request. Tests check dictionary coverage, placeholder parity, and optional server HTML across all eight routes and three locales. Styling uses CSS tokens and Tailwind tooling; semantic native controls are used where a component library would add unnecessary complexity. Animations are restrained CSS transitions and respect reduced-motion preferences.
+Translations live in `src/lib/i18n/messages.json`, keyed by the original English message with matching `ru` and `kk` entries. Use complete messages with named placeholders for dynamic values. `getTranslator()` reads the validated cookie in server components; `useLocale()` provides translations to client components. Unknown text falls back to its original value. Cookie-dependent pages render per request. Tests check dictionary coverage, placeholder parity, and optional server HTML across all eight routes and three locales. The UI uses [shadcn/ui with Radix](https://ui.shadcn.com/docs/components) for buttons, sheets, tabs, cards, badges, inputs, textareas, and confirmation dialogs. Editable kit components live in `src/components/kit/`; `components.json` configures the registry, `src/app/kit.css` maps Tailwind component tokens, and `src/app/globals.css` defines the shared visual system. Manrope and Noto Sans are self-hosted through Fontsource, including Cyrillic coverage for Russian and Kazakh. The desktop sidebar becomes a keyboard-accessible modal navigation sheet on smaller screens. Native selects and radio groups retain standard browser interactions. Animations respect reduced-motion preferences.
+
+The prompt library searches both English teaching content and localized titles/categories, with combined filters and a resettable empty state. Learning tabs support arrow-key navigation. Destructive in-session actions (clear conversation, restart practice, exit assessment) use translated confirmation dialogs; quiz changes announce the new question through focus. Current answers and chat content survive interface-language changes.
 
 ## Quality checks
 

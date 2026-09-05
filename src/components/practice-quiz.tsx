@@ -1,4 +1,5 @@
 "use client";
+import { Button } from "./kit/button";
 import { useLocale } from "@/lib/i18n/provider";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
@@ -11,6 +12,7 @@ import {
   Sparkles,
   LoaderCircle,
   Target,
+  X,
 } from "lucide-react";
 import {
   categories,
@@ -21,6 +23,8 @@ import {
   type Answer,
 } from "@/lib/types";
 import { api, initSession, track } from "@/lib/client";
+import { Input } from "./kit/input";
+import { ConfirmAction } from "./confirm-action";
 import { Notice } from "./ui";
 import { PracticeHistory } from "./practice-history";
 type Feedback = { correct: boolean; answer: string; explanation: string };
@@ -44,6 +48,16 @@ export function PracticeQuiz() {
   const [reviews, setReviews] = useState<Feedback[]>([]);
   const runId = useRef("");
   const locked = useRef(false);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const previousView = useRef({ stage, index });
+  useEffect(() => {
+    if (
+      previousView.current.stage !== stage ||
+      previousView.current.index !== index
+    )
+      headingRef.current?.focus();
+    previousView.current = { stage, index };
+  }, [stage, index]);
   useEffect(() => {
     void initSession();
   }, []);
@@ -145,7 +159,9 @@ export function PracticeQuiz() {
             <div className="skill-icon mint">
               <Target size={25} />
             </div>
-            <h2>{tr("Make this session yours.")}</h2>
+            <h2 ref={headingRef} tabIndex={-1}>
+              {tr("Make this session yours.")}
+            </h2>
             <p className="muted">
               {tr(
                 "Pick your level and a focus. We’ll take it one question at a time.",
@@ -154,7 +170,8 @@ export function PracticeQuiz() {
             <label className="field-label">{tr("Your English level")}</label>
             <div className="level-grid">
               {levels.map((l, i) => (
-                <button
+                <Button
+                  variant="ghost"
                   aria-pressed={level === l}
                   className={`level-option ${level === l ? "active" : ""}`}
                   key={l}
@@ -171,7 +188,7 @@ export function PracticeQuiz() {
                       ][i],
                     )}
                   </span>
-                </button>
+                </Button>
               ))}
             </div>
             <div className="field">
@@ -198,13 +215,18 @@ export function PracticeQuiz() {
                 {tr(category === "All categories" ? "10" : "2")}{" "}
                 {tr("questions · Untimed · Instant feedback")}
               </span>
-              <button className="button" disabled={busy} onClick={start}>
+              <Button
+                variant="ghost"
+                className="button"
+                disabled={busy}
+                onClick={start}
+              >
                 {busy ? (
                   <LoaderCircle size={16} className="loading-spin" />
                 ) : null}
                 {tr("Start Practice")}
                 <ArrowRight size={17} />
-              </button>
+              </Button>
             </div>
             {error && <Notice error>{tr(error)}</Notice>}
           </div>
@@ -254,7 +276,9 @@ export function PracticeQuiz() {
           <Trophy size={35} />
         </div>
         <p className="eyebrow">{tr("ONE MORE STEP FORWARD")}</p>
-        <h2>{tr("Practice Complete")}</h2>
+        <h2 ref={headingRef} tabIndex={-1}>
+          {tr("Practice Complete")}
+        </h2>
         <div className="big-score">
           {Math.round((score / questions.length) * 100)}
           <span>%</span>
@@ -286,17 +310,28 @@ export function PracticeQuiz() {
         {error && (
           <Notice error>
             {tr(error)}{" "}
-            <button className="text-link" onClick={save} disabled={busy}>
+            <Button
+              variant="ghost"
+              className="text-link"
+              onClick={save}
+              disabled={busy}
+            >
               {tr("Retry saving")}
-            </button>
+            </Button>
           </Notice>
         )}
         <div className="button-row">
-          <button className="button" onClick={start} disabled={busy}>
+          <Button
+            variant="ghost"
+            className="button"
+            onClick={start}
+            disabled={busy}
+          >
             <RotateCcw size={15} />
             {tr("Practice Again")}
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="ghost"
             className="button secondary"
             disabled={busy}
             onClick={() => {
@@ -305,7 +340,7 @@ export function PracticeQuiz() {
             }}
           >
             {tr("Choose Another Level")}
-          </button>
+          </Button>
           <Link href="/learn" className="text-link">
             {tr("Return to Learning")}
             <ArrowRight size={15} />
@@ -344,17 +379,19 @@ export function PracticeQuiz() {
           {tr(level)} ·{" "}
           {tr(category === "All categories" ? "MIXED PRACTICE" : category)}
         </span>
-        <button
-          className="text-link"
-          disabled={busy}
-          onClick={() => {
+        <ConfirmAction
+          title="Restart this practice?"
+          description="Your current answers will be cleared. This unfinished session will not be saved."
+          onConfirm={() => {
             setStage("setup");
             setError("");
           }}
         >
-          <RotateCcw size={14} />
-          {tr("Restart")}
-        </button>
+          <Button variant="ghost" className="text-link" disabled={busy}>
+            <RotateCcw size={14} />
+            {tr("Restart")}
+          </Button>
+        </ConfirmAction>
       </div>
       <div className="panel quiz-panel">
         <div className="quiz-progress-label">
@@ -374,7 +411,9 @@ export function PracticeQuiz() {
           aria-label={tr("Quiz progress")}
         />
         <p className="eyebrow">{tr(q.category).toLocaleUpperCase()}</p>
-        <h2 lang="en">{q.question}</h2>
+        <h2 ref={headingRef} tabIndex={-1} lang="en">
+          {q.question}
+        </h2>
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -387,7 +426,7 @@ export function PracticeQuiz() {
               {q.options.map((option, i) => (
                 <label
                   key={option}
-                  className={`answer-option ${answer === option ? "selected" : ""} ${feedback && option === feedback.answer ? "correct" : ""}`}
+                  className={`answer-option ${answer === option ? "selected" : ""} ${feedback && option === feedback.answer ? "correct" : ""} ${feedback && !feedback.correct && answer === option ? "incorrect" : ""}`}
                 >
                   <input
                     type="radio"
@@ -401,7 +440,10 @@ export function PracticeQuiz() {
                   </span>
                   <span lang="en">{option}</span>
                   {feedback && option === feedback.answer && (
-                    <Check size={17} />
+                    <Check size={17} aria-hidden="true" />
+                  )}
+                  {feedback && !feedback.correct && answer === option && (
+                    <X size={17} aria-hidden="true" />
                   )}
                 </label>
               ))}
@@ -409,7 +451,7 @@ export function PracticeQuiz() {
           ) : (
             <div className="field">
               <label htmlFor="written-answer">{tr("Your answer")}</label>
-              <input
+              <Input
                 id="written-answer"
                 maxLength={1000}
                 value={answer}
@@ -426,7 +468,11 @@ export function PracticeQuiz() {
               role="status"
             >
               <strong>
-                {tr(feedback.correct ? "Correct!" : "Try again!")}
+                {tr(
+                  feedback.correct
+                    ? "Correct!"
+                    : "Not quite — learn from this one.",
+                )}
               </strong>
               {!feedback.correct && (
                 <p>
@@ -446,23 +492,29 @@ export function PracticeQuiz() {
               )}
             </span>
             {feedback ? (
-              <button className="button" type="button" onClick={next}>
+              <Button
+                variant="ghost"
+                className="button"
+                type="button"
+                onClick={next}
+              >
                 {tr(
                   index + 1 === questions.length
                     ? "See Final Score"
                     : "Next Question",
                 )}
                 <ArrowRight size={16} />
-              </button>
+              </Button>
             ) : (
-              <button
+              <Button
+                variant="ghost"
                 className="button"
                 type="submit"
                 disabled={!answer.trim() || busy}
               >
                 {tr(busy ? "Checking…" : "Check Answer")}
                 <ArrowRight size={16} />
-              </button>
+              </Button>
             )}
           </div>
         </form>

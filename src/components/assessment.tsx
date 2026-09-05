@@ -1,4 +1,5 @@
 "use client";
+import { Button } from "./kit/button";
 import { useLocale } from "@/lib/i18n/provider";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
@@ -10,6 +11,7 @@ import type {
   Answer,
 } from "@/lib/types";
 import { api } from "@/lib/client";
+import { ConfirmAction } from "./confirm-action";
 import { Notice } from "./ui";
 type SessionState = {
   storage: boolean;
@@ -29,6 +31,14 @@ export function Assessment({ onSaved }: { onSaved: () => void }) {
   const [active, setActive] = useState(false);
   const [result, setResult] = useState<AssessmentResult | null>(null);
   const locked = useRef(false);
+  const questionHeading = useRef<HTMLHeadingElement>(null);
+  const overviewHeading = useRef<HTMLHeadingElement>(null);
+  const wasActive = useRef(false);
+  useEffect(() => {
+    if (active) questionHeading.current?.focus();
+    else if (wasActive.current) overviewHeading.current?.focus();
+    wasActive.current = active;
+  }, [active, index]);
   async function refresh() {
     setError("");
     try {
@@ -110,7 +120,9 @@ export function Assessment({ onSaved }: { onSaved: () => void }) {
       <div className="assessment-heading">
         <div>
           <p className="eyebrow">{tr("YOUR PART IN THE EXPERIMENT")}</p>
-          <h2>{tr("Begin with a baseline.")}</h2>
+          <h2 ref={overviewHeading} tabIndex={-1}>
+            {tr("Begin with a baseline.")}
+          </h2>
         </div>
         <ClipboardCheck size={27} />
       </div>
@@ -138,7 +150,9 @@ export function Assessment({ onSaved }: { onSaved: () => void }) {
             aria-label={tr("Assessment progress")}
           />
           <p className="eyebrow">{tr(q.skill).toLocaleUpperCase()}</p>
-          <h3 lang="en">{q.question}</h3>
+          <h3 lang="en" ref={questionHeading} tabIndex={-1}>
+            {q.question}
+          </h3>
           <fieldset className="answer-options" disabled={busy}>
             <legend className="sr-only">
               {tr("Choose an assessment answer")}
@@ -173,24 +187,27 @@ export function Assessment({ onSaved }: { onSaved: () => void }) {
             )}
           </p>
           <div className="button-row">
-            <button
+            <Button
+              variant="ghost"
               className="button secondary"
               disabled={index === 0 || busy}
               onClick={() => setIndex((i) => i - 1)}
             >
               {tr("Previous")}
-            </button>
+            </Button>
             {index < questions.length - 1 ? (
-              <button
+              <Button
+                variant="ghost"
                 className="button"
                 disabled={!answer || busy}
                 onClick={() => setIndex((i) => i + 1)}
               >
                 {tr("Next Question")}
                 <ArrowRight size={16} />
-              </button>
+              </Button>
             ) : (
-              <button
+              <Button
+                variant="ghost"
                 className="button"
                 disabled={answers.length !== questions.length || busy}
                 onClick={submit}
@@ -199,18 +216,20 @@ export function Assessment({ onSaved }: { onSaved: () => void }) {
                   <LoaderCircle size={16} className="loading-spin" />
                 ) : null}
                 {tr(busy ? "Saving…" : "Submit Assessment")}
-              </button>
+              </Button>
             )}
-            <button
-              className="text-link"
-              disabled={busy}
-              onClick={() => {
+            <ConfirmAction
+              title="Leave this assessment?"
+              description="Your answers have not been saved. Leaving will discard this attempt."
+              onConfirm={() => {
                 setActive(false);
                 setError("");
               }}
             >
-              {tr("Exit without saving")}
-            </button>
+              <Button variant="ghost" className="text-link" disabled={busy}>
+                {tr("Exit without saving")}
+              </Button>
+            </ConfirmAction>
           </div>
         </div>
       ) : (
@@ -226,14 +245,15 @@ export function Assessment({ onSaved }: { onSaved: () => void }) {
                   {number(before.total_score)}%
                 </strong>
               ) : (
-                <button
+                <Button
+                  variant="ghost"
                   className="button secondary"
                   disabled={busy || !state?.storage}
                   onClick={() => start("before")}
                 >
                   {tr("Start Before Test")}
                   <ArrowRight size={15} />
-                </button>
+                </Button>
               )}
             </div>
             <div className="assessment-stage">
@@ -255,14 +275,15 @@ export function Assessment({ onSaved }: { onSaved: () => void }) {
                   {number(after.total_score)}%
                 </strong>
               ) : (
-                <button
+                <Button
+                  variant="ghost"
                   className="button secondary"
                   disabled={busy || !before || !state?.canTakeAfter}
                   onClick={() => start("after")}
                 >
                   {tr("Start After Test")}
                   <ArrowRight size={15} />
-                </button>
+                </Button>
               )}
             </div>
           </div>
@@ -281,9 +302,9 @@ export function Assessment({ onSaved }: { onSaved: () => void }) {
               {tr(
                 "Complete and save a practice session after your Before test to unlock the After test. Demo replies do not unlock it.",
               )}{" "}
-              <button className="text-link" onClick={refresh}>
+              <Button variant="ghost" className="text-link" onClick={refresh}>
                 {tr("Refresh status")}
-              </button>
+              </Button>
             </Notice>
           )}
           {result && (
@@ -320,9 +341,9 @@ export function Assessment({ onSaved }: { onSaved: () => void }) {
         <Notice error>
           {tr(error)}
           {!active && (
-            <button className="text-link" onClick={refresh}>
+            <Button variant="ghost" className="text-link" onClick={refresh}>
               {tr("Retry status")}
-            </button>
+            </Button>
           )}
         </Notice>
       )}

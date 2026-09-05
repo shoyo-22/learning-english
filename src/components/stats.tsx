@@ -1,7 +1,6 @@
 "use client";
 import { useLocale } from "@/lib/i18n/provider";
 import { useEffect, useState } from "react";
-import { ArrowUpRight } from "lucide-react";
 export function HomeStats() {
   const { tr } = useLocale();
 
@@ -30,10 +29,7 @@ export function HomeStats() {
           [data ? String(data.aiSessions) : "—", "AI learning exchanges"],
         ].map(([value, label]) => (
           <div key={label}>
-            <strong>
-              {tr(value)}
-              <ArrowUpRight size={18} />
-            </strong>
+            <strong>{tr(value)}</strong>
             <span>{tr(label)}</span>
           </div>
         ))}

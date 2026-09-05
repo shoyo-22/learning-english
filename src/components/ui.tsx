@@ -1,7 +1,19 @@
 "use client";
 import { useLocale } from "@/lib/i18n/provider";
+import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
-import { ArrowUpRight } from "lucide-react";
+import {
+  BookOpen,
+  Target,
+  MessageCircle,
+  Quote,
+  Mic,
+  FlaskConical,
+  Info,
+  ArrowUpRight,
+  CircleAlert,
+  Info as InfoIcon,
+} from "lucide-react";
 export function PageIntro({
   eyebrow,
   title,
@@ -14,6 +26,17 @@ export function PageIntro({
   children?: ReactNode;
 }) {
   const { tr } = useLocale();
+  const pathname = usePathname();
+  const Icon =
+    {
+      "/learn": BookOpen,
+      "/practice": Target,
+      "/assistant": MessageCircle,
+      "/prompts": Quote,
+      "/speaking": Mic,
+      "/research": FlaskConical,
+      "/about": Info,
+    }[pathname] || BookOpen;
 
   return (
     <div className="page-intro">
@@ -22,6 +45,9 @@ export function PageIntro({
         <h1>{tr(title)}</h1>
         <p className="intro-description">{tr(description)}</p>
       </div>
+      <span className="page-intro-icon" aria-hidden="true">
+        <Icon size={32} strokeWidth={1.6} />
+      </span>
       {children}
     </div>
   );
@@ -65,7 +91,10 @@ export function Notice({
       className={`notice ${error ? "error" : ""}`}
       role={error ? "alert" : "status"}
     >
-      {children}
+      <span className="notice-icon" aria-hidden="true">
+        {error ? <CircleAlert size={18} /> : <InfoIcon size={18} />}
+      </span>
+      <div className="notice-content">{children}</div>
     </div>
   );
 }

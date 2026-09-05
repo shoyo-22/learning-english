@@ -1,4 +1,5 @@
 "use client";
+import { Button } from "./kit/button";
 import { useLocale } from "@/lib/i18n/provider";
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -12,6 +13,8 @@ import {
   LoaderCircle,
 } from "lucide-react";
 import { api, initSession } from "@/lib/client";
+import { Textarea } from "./kit/textarea";
+import { ConfirmAction } from "./confirm-action";
 import { Notice } from "./ui";
 type Message = { role: "user" | "assistant"; content: string };
 const examples = [
@@ -106,18 +109,25 @@ export function AssistantChat() {
             <strong>{tr("Your English companion · Demo")}</strong>
             <span>{tr("Ask freely. Learn one thing at a time.")}</span>
           </div>
-          <button
-            className="icon-button"
-            aria-label={tr("Clear conversation")}
-            disabled={busy || !messages.length}
-            onClick={() => {
+          <ConfirmAction
+            title="Clear this conversation?"
+            description="Your messages will be removed from this chat. You can start a new conversation anytime."
+            onConfirm={() => {
               setMessages([]);
               setError("");
               setTracking(null);
             }}
+            focusAfterConfirm={() => inputRef.current?.focus()}
           >
-            <Trash2 size={16} />
-          </button>
+            <Button
+              variant="ghost"
+              className="icon-button"
+              aria-label={tr("Clear conversation")}
+              disabled={busy || !messages.length}
+            >
+              <Trash2 size={16} />
+            </Button>
+          </ConfirmAction>
         </div>
         <Notice>
           {tr(
@@ -138,7 +148,8 @@ export function AssistantChat() {
               </p>
               <div className="chat-examples">
                 {examples.slice(0, 4).map(({ icon: Icon, title, text }) => (
-                  <button
+                  <Button
+                    variant="ghost"
                     key={title}
                     onClick={() => {
                       setInput(text);
@@ -148,7 +159,7 @@ export function AssistantChat() {
                     <Icon size={16} />
                     {tr(title)}
                     <span>↗</span>
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
@@ -174,13 +185,14 @@ export function AssistantChat() {
             <Notice error>
               {tr(error)}
               <div>
-                <button
+                <Button
+                  variant="ghost"
                   className="text-link"
                   disabled={busy}
                   onClick={() => send(true)}
                 >
                   {tr("Retry message")}
-                </button>
+                </Button>
               </div>
             </Notice>
           )}
@@ -196,7 +208,7 @@ export function AssistantChat() {
           <label htmlFor="chat-input" className="sr-only">
             {tr("Your message")}
           </label>
-          <textarea
+          <Textarea
             ref={inputRef}
             id="chat-input"
             placeholder={tr("Ask a question, or write a sentence to improve…")}
@@ -205,7 +217,11 @@ export function AssistantChat() {
             disabled={busy}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
+              if (
+                e.key === "Enter" &&
+                !e.shiftKey &&
+                !e.nativeEvent.isComposing
+              ) {
                 e.preventDefault();
                 void send();
               }
@@ -216,7 +232,9 @@ export function AssistantChat() {
               {input.length}
               {tr("/2000 · Shift + Enter for a new line")}
             </span>
-            <button
+            <Button
+              variant="ghost"
+              type="submit"
               aria-label={tr("Send message")}
               disabled={busy || !input.trim()}
               className="send-button"
@@ -226,7 +244,7 @@ export function AssistantChat() {
               ) : (
                 <ArrowUp size={19} />
               )}
-            </button>
+            </Button>
           </div>
         </form>
         <p className="chat-disclaimer">
@@ -241,7 +259,8 @@ export function AssistantChat() {
           <p className="eyebrow">{tr("A GOOD PLACE TO START")}</p>
           <h3>{tr("Try asking…")}</h3>
           {examples.map(({ title, text }) => (
-            <button
+            <Button
+              variant="ghost"
               key={title}
               className="example-prompt-button"
               lang="en"
@@ -253,7 +272,7 @@ export function AssistantChat() {
             >
               {text}
               <span>↗</span>
-            </button>
+            </Button>
           ))}
         </div>
         <div className="tip">

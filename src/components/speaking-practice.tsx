@@ -1,4 +1,5 @@
 "use client";
+import { Button } from "./kit/button";
 import { useLocale } from "@/lib/i18n/provider";
 import { useState } from "react";
 import Link from "next/link";
@@ -19,7 +20,8 @@ export function SpeakingPractice() {
     <div className="speaking-layout">
       <aside className="topic-list" aria-label={tr("Speaking topic")}>
         {speakingTopics.map((t, i) => (
-          <button
+          <Button
+            variant="ghost"
             key={t.name}
             className={`topic-button ${i === index ? "active" : ""}`}
             aria-pressed={i === index}
@@ -31,7 +33,7 @@ export function SpeakingPractice() {
               <small>{tr(t.level)}</small>
             </span>
             <ArrowRight size={15} />
-          </button>
+          </Button>
         ))}
       </aside>
       <article className="panel speaking-main">
@@ -58,13 +60,14 @@ export function SpeakingPractice() {
             text={`${topic.name}\n${topic.questions.map((q, i) => `${i + 1}. ${q}`).join("\n")}`}
             label={tr("Copy Questions")}
           />
-          <button
+          <Button
+            variant="ghost"
             className="button secondary"
             onClick={() => select((index + 1) % speakingTopics.length)}
           >
             <RefreshCw size={15} />
             {tr("Try Another Topic")}
-          </button>
+          </Button>
         </div>
         <div className="tip">
           <Mic size={18} />
