@@ -1,4 +1,5 @@
 "use client";
+import { useLocale } from "@/lib/i18n/provider";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, ClipboardCheck, Check, LoaderCircle } from "lucide-react";
@@ -16,6 +17,8 @@ type SessionState = {
   canTakeAfter: boolean;
 };
 export function Assessment({ onSaved }: { onSaved: () => void }) {
+  const { tr, number } = useLocale();
+
   const [state, setState] = useState<SessionState | null>(null);
   const [questions, setQuestions] = useState<PublicQuestion[]>([]);
   const [type, setType] = useState<AssessmentType>("before");
@@ -106,33 +109,40 @@ export function Assessment({ onSaved }: { onSaved: () => void }) {
     <section className="assessment-section panel" id="assessment">
       <div className="assessment-heading">
         <div>
-          <p className="eyebrow">YOUR PART IN THE EXPERIMENT</p>
-          <h2>Begin with a baseline.</h2>
+          <p className="eyebrow">{tr("YOUR PART IN THE EXPERIMENT")}</p>
+          <h2>{tr("Begin with a baseline.")}</h2>
         </div>
         <ClipboardCheck size={27} />
       </div>
       <p className="muted assessment-description">
-        Take a short test, practice with the platform, then take a comparable
-        follow-up. Keep using the same browser so your two results can be
-        paired.
+        {tr(
+          "Take a short test, practice with the platform, then take a comparable follow-up. Keep using the same browser so your two results can be paired.",
+        )}
       </p>
       {active ? (
         <div className="assessment-test">
           <div className="quiz-progress-label">
-            <span className="tag">RESEARCH · {type.toUpperCase()} TEST</span>
+            <span className="tag">
+              {tr("Research · {type} test", { type: tr(type) })}
+            </span>
             <span>
-              Question {index + 1} of {questions.length}
+              {tr("Question {current} of {total}", {
+                current: index + 1,
+                total: questions.length,
+              })}
             </span>
           </div>
           <progress
             value={answers.length}
             max={questions.length}
-            aria-label="Assessment progress"
+            aria-label={tr("Assessment progress")}
           />
-          <p className="eyebrow">{q.skill.toUpperCase()}</p>
-          <h3>{q.question}</h3>
+          <p className="eyebrow">{tr(q.skill).toLocaleUpperCase()}</p>
+          <h3 lang="en">{q.question}</h3>
           <fieldset className="answer-options" disabled={busy}>
-            <legend className="sr-only">Choose an assessment answer</legend>
+            <legend className="sr-only">
+              {tr("Choose an assessment answer")}
+            </legend>
             {q.options?.map((option, i) => (
               <label
                 key={option}
@@ -151,15 +161,16 @@ export function Assessment({ onSaved }: { onSaved: () => void }) {
                   }
                 />
                 <span className="option-letter">
-                  {String.fromCharCode(65 + i)}
+                  {tr(String.fromCharCode(65 + i))}
                 </span>
-                <span>{option}</span>
+                <span lang="en">{option}</span>
               </label>
             ))}
           </fieldset>
           <p className="quiz-footnote">
-            No corrections are shown during the experiment. Please answer
-            independently without AI or notes.
+            {tr(
+              "No corrections are shown during the experiment. Please answer independently without AI or notes.",
+            )}
           </p>
           <div className="button-row">
             <button
@@ -167,7 +178,7 @@ export function Assessment({ onSaved }: { onSaved: () => void }) {
               disabled={index === 0 || busy}
               onClick={() => setIndex((i) => i - 1)}
             >
-              Previous
+              {tr("Previous")}
             </button>
             {index < questions.length - 1 ? (
               <button
@@ -175,7 +186,8 @@ export function Assessment({ onSaved }: { onSaved: () => void }) {
                 disabled={!answer || busy}
                 onClick={() => setIndex((i) => i + 1)}
               >
-                Next Question <ArrowRight size={16} />
+                {tr("Next Question")}
+                <ArrowRight size={16} />
               </button>
             ) : (
               <button
@@ -186,7 +198,7 @@ export function Assessment({ onSaved }: { onSaved: () => void }) {
                 {busy ? (
                   <LoaderCircle size={16} className="loading-spin" />
                 ) : null}
-                {busy ? "Saving…" : "Submit Assessment"}
+                {tr(busy ? "Saving…" : "Submit Assessment")}
               </button>
             )}
             <button
@@ -197,7 +209,7 @@ export function Assessment({ onSaved }: { onSaved: () => void }) {
                 setError("");
               }}
             >
-              Exit without saving
+              {tr("Exit without saving")}
             </button>
           </div>
         </div>
@@ -206,11 +218,12 @@ export function Assessment({ onSaved }: { onSaved: () => void }) {
           <div className="assessment-stages">
             <div className={`assessment-stage ${before ? "finished" : ""}`}>
               <span>01</span>
-              <h3>Before Assessment</h3>
-              <p>8 questions · About 5 minutes</p>
+              <h3>{tr("Before Assessment")}</h3>
+              <p>{tr("8 questions · About 5 minutes")}</p>
               {before ? (
                 <strong>
-                  <Check size={16} /> Saved · {before.total_score}%
+                  <Check size={16} /> {tr("Saved ·")}
+                  {number(before.total_score)}%
                 </strong>
               ) : (
                 <button
@@ -218,25 +231,28 @@ export function Assessment({ onSaved }: { onSaved: () => void }) {
                   disabled={busy || !state?.storage}
                   onClick={() => start("before")}
                 >
-                  Start Before Test <ArrowRight size={15} />
+                  {tr("Start Before Test")}
+                  <ArrowRight size={15} />
                 </button>
               )}
             </div>
             <div className="assessment-stage">
               <span>02</span>
-              <h3>Learn & practice</h3>
-              <p>Spend 15–20 minutes learning.</p>
+              <h3>{tr("Learn & practice")}</h3>
+              <p>{tr("Spend 15–20 minutes learning.")}</p>
               <Link href="/practice" className="button secondary">
-                Open Practice <ArrowRight size={15} />
+                {tr("Open Practice")}
+                <ArrowRight size={15} />
               </Link>
             </div>
             <div className={`assessment-stage ${after ? "finished" : ""}`}>
               <span>03</span>
-              <h3>After Assessment</h3>
-              <p>8 comparable questions</p>
+              <h3>{tr("After Assessment")}</h3>
+              <p>{tr("8 comparable questions")}</p>
               {after ? (
                 <strong>
-                  <Check size={16} /> Saved · {after.total_score}%
+                  <Check size={16} /> {tr("Saved ·")}
+                  {number(after.total_score)}%
                 </strong>
               ) : (
                 <button
@@ -244,49 +260,57 @@ export function Assessment({ onSaved }: { onSaved: () => void }) {
                   disabled={busy || !before || !state?.canTakeAfter}
                   onClick={() => start("after")}
                 >
-                  Start After Test <ArrowRight size={15} />
+                  {tr("Start After Test")}
+                  <ArrowRight size={15} />
                 </button>
               )}
             </div>
           </div>
           {!state && !error && (
-            <Notice>Checking your assessment status…</Notice>
+            <Notice>{tr("Checking your assessment status…")}</Notice>
           )}
           {state && !state.storage && (
             <Notice>
-              Research assessments become available when the research database
-              is connected. You can explore learning and practice now.
+              {tr(
+                "Research assessments become available when the research database is connected. You can explore learning and practice now.",
+              )}
             </Notice>
           )}
           {before && !after && !state?.canTakeAfter && (
             <Notice>
-              Complete and save a practice session, or use the AI assistant,
-              after your Before test to unlock the After test.{" "}
+              {tr(
+                "Complete and save a practice session after your Before test to unlock the After test. Demo replies do not unlock it.",
+              )}{" "}
               <button className="text-link" onClick={refresh}>
-                Refresh status
+                {tr("Refresh status")}
               </button>
             </Notice>
           )}
           {result && (
             <Notice>
-              Your {result.assessment_type} assessment is saved:{" "}
-              {result.total_score}%.{" "}
-              {result.assessment_type === "before"
-                ? "Next, spend time learning before the follow-up test."
-                : "Your matched pair is now included in the research results."}
+              {tr("Your {type} assessment is saved: {score}%.", {
+                type: tr(result.assessment_type),
+                score: number(result.total_score),
+              })}{" "}
+              {tr(
+                result.assessment_type === "before"
+                  ? "Next, spend time learning before the follow-up test."
+                  : "Your matched pair is now included in the research results.",
+              )}
             </Notice>
           )}
           {before && after && (
             <div className="personal-comparison">
-              <strong>Your matched comparison</strong>
+              <strong>{tr("Your matched comparison")}</strong>
               <span>
-                {before.total_score}% → {after.total_score}%
+                {number(before.total_score)}% → {number(after.total_score)}%
               </span>
               <p>
-                {after.total_score - before.total_score >= 0 ? "+" : ""}
-                {after.total_score - before.total_score} percentage points. This
-                short test describes performance on these tasks; it is not a
-                certified English level.
+                {tr(after.total_score - before.total_score >= 0 ? "+" : "")}
+                {number(after.total_score - before.total_score)}{" "}
+                {tr(
+                  "percentage points. This short test describes performance on these tasks; it is not a certified English level.",
+                )}
               </p>
             </div>
           )}
@@ -294,19 +318,18 @@ export function Assessment({ onSaved }: { onSaved: () => void }) {
       )}
       {error && (
         <Notice error>
-          {error}
+          {tr(error)}
           {!active && (
             <button className="text-link" onClick={refresh}>
-              Retry status
+              {tr("Retry status")}
             </button>
           )}
         </Notice>
       )}
       <p className="assessment-caveat">
-        Participation is optional. The first submission for each test is final.
-        Speaking items assess conversational response selection; writing items
-        assess editing knowledge. Neither measures full productive language
-        ability.
+        {tr(
+          "Participation is optional. The first submission for each test is final. Speaking items assess conversational response selection; writing items assess editing knowledge. Neither measures full productive language ability.",
+        )}
       </p>
     </section>
   );

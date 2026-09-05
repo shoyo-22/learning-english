@@ -1,4 +1,5 @@
 "use client";
+import { useLocale } from "@/lib/i18n/provider";
 import { useState } from "react";
 import { Check, Copy } from "lucide-react";
 import { track } from "@/lib/client";
@@ -11,6 +12,8 @@ export function CopyButton({
   label?: string;
   eventId?: string;
 }) {
+  const { tr } = useLocale();
+
   const [status, setStatus] = useState<"idle" | "copied" | "error">("idle");
   async function copy() {
     try {
@@ -26,12 +29,14 @@ export function CopyButton({
     <div>
       <button className="copy-button" onClick={copy}>
         {status === "copied" ? <Check size={14} /> : <Copy size={14} />}{" "}
-        {status === "copied" ? "Copied!" : label}
+        {tr(status === "copied" ? "Copied!" : label)}
       </button>
       <span role="status" className="copy-status">
-        {status === "error"
-          ? "Copy unavailable. Select and copy the text manually."
-          : ""}
+        {tr(
+          status === "error"
+            ? "Copy unavailable. Select and copy the text manually."
+            : "",
+        )}
       </span>
     </div>
   );

@@ -1,4 +1,5 @@
 "use client";
+import { useLocale } from "@/lib/i18n/provider";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/client";
 type SavedPractice = {
@@ -11,6 +12,8 @@ type SavedPractice = {
   completed_at: string;
 };
 export function PracticeHistory() {
+  const { tr, number } = useLocale();
+
   const [items, setItems] = useState<SavedPractice[]>([]);
   useEffect(() => {
     api<{ practice: SavedPractice[] }>("/api/session")
@@ -20,35 +23,36 @@ export function PracticeHistory() {
   if (!items.length) return null;
   return (
     <section className="panel history-panel">
-      <p className="eyebrow">YOUR RECENT PROGRESS</p>
-      <h3>Keep building on what you know.</h3>
+      <p className="eyebrow">{tr("YOUR RECENT PROGRESS")}</p>
+      <h3>{tr("Keep building on what you know.")}</h3>
       <div className="table-scroll">
         <table className="results-table">
           <thead>
             <tr>
-              <th>Level</th>
-              <th>Focus</th>
-              <th>Correct</th>
-              <th>Score</th>
+              <th>{tr("Level")}</th>
+              <th>{tr("Focus")}</th>
+              <th>{tr("Correct")}</th>
+              <th>{tr("Score")}</th>
             </tr>
           </thead>
           <tbody>
             {items.map((p) => (
               <tr key={p.id}>
-                <th>{p.level}</th>
-                <td>{p.category}</td>
+                <th>{tr(p.level)}</th>
+                <td>{tr(p.category)}</td>
                 <td>
                   {p.correct_answers}/{p.total_questions}
                 </td>
-                <td>{p.score_percentage}%</td>
+                <td>{number(p.score_percentage)}%</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
       <p className="chart-note">
-        Your last five saved sessions in this browser. Different questions and
-        levels may have different difficulty.
+        {tr(
+          "Your last five saved sessions in this browser. Different questions and levels may have different difficulty.",
+        )}
       </p>
     </section>
   );

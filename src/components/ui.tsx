@@ -1,3 +1,5 @@
+"use client";
+import { useLocale } from "@/lib/i18n/provider";
 import type { ReactNode } from "react";
 import { ArrowUpRight } from "lucide-react";
 export function PageIntro({
@@ -11,12 +13,14 @@ export function PageIntro({
   description: string;
   children?: ReactNode;
 }) {
+  const { tr } = useLocale();
+
   return (
     <div className="page-intro">
       <div>
-        <p className="eyebrow">{eyebrow}</p>
-        <h1>{title}</h1>
-        <p className="intro-description">{description}</p>
+        <p className="eyebrow">{tr(eyebrow)}</p>
+        <h1>{tr(title)}</h1>
+        <p className="intro-description">{tr(description)}</p>
       </div>
       {children}
     </div>
@@ -33,12 +37,14 @@ export function SectionHeading({
   description?: string;
   children?: ReactNode;
 }) {
+  const { tr } = useLocale();
+
   return (
     <div className="section-heading">
       <div>
-        {eyebrow && <p className="eyebrow">{eyebrow}</p>}
-        <h2>{title}</h2>
-        {description && <p>{description}</p>}
+        {eyebrow && <p className="eyebrow">{tr(eyebrow)}</p>}
+        <h2>{tr(title)}</h2>
+        {description && <p>{tr(description)}</p>}
       </div>
       {children}
     </div>

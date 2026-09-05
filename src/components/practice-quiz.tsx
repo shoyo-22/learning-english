@@ -1,4 +1,5 @@
 "use client";
+import { useLocale } from "@/lib/i18n/provider";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
@@ -24,6 +25,8 @@ import { Notice } from "./ui";
 import { PracticeHistory } from "./practice-history";
 type Feedback = { correct: boolean; answer: string; explanation: string };
 export function PracticeQuiz() {
+  const { tr } = useLocale();
+
   const [level, setLevel] = useState<Level>("A2");
   const [category, setCategory] = useState<Category | "All categories">(
     "All categories",
@@ -142,11 +145,13 @@ export function PracticeQuiz() {
             <div className="skill-icon mint">
               <Target size={25} />
             </div>
-            <h2>Make this session yours.</h2>
+            <h2>{tr("Make this session yours.")}</h2>
             <p className="muted">
-              Pick your level and a focus. We’ll take it one question at a time.
+              {tr(
+                "Pick your level and a focus. We’ll take it one question at a time.",
+              )}
             </p>
-            <label className="field-label">Your English level</label>
+            <label className="field-label">{tr("Your English level")}</label>
             <div className="level-grid">
               {levels.map((l, i) => (
                 <button
@@ -155,22 +160,24 @@ export function PracticeQuiz() {
                   key={l}
                   onClick={() => setLevel(l)}
                 >
-                  <strong>{l}</strong>
+                  <strong>{tr(l)}</strong>
                   <span>
-                    {
+                    {tr(
                       [
                         "Beginner",
                         "Elementary",
                         "Intermediate",
                         "Upper intermediate",
-                      ][i]
-                    }
+                      ][i],
+                    )}
                   </span>
                 </button>
               ))}
             </div>
             <div className="field">
-              <label htmlFor="category">What would you like to practice?</label>
+              <label htmlFor="category">
+                {tr("What would you like to practice?")}
+              </label>
               <select
                 id="category"
                 value={category}
@@ -178,50 +185,62 @@ export function PracticeQuiz() {
                   setCategory(e.target.value as Category | "All categories")
                 }
               >
-                <option>All categories</option>
+                <option value="All categories">{tr("All categories")}</option>
                 {categories.map((c) => (
-                  <option key={c}>{c}</option>
+                  <option key={c} value={c}>
+                    {tr(c)}
+                  </option>
                 ))}
               </select>
             </div>
             <div className="setup-bottom">
               <span>
-                {category === "All categories" ? "10" : "2"} questions · Untimed
-                · Instant feedback
+                {tr(category === "All categories" ? "10" : "2")}{" "}
+                {tr("questions · Untimed · Instant feedback")}
               </span>
               <button className="button" disabled={busy} onClick={start}>
                 {busy ? (
                   <LoaderCircle size={16} className="loading-spin" />
                 ) : null}
-                Start Practice <ArrowRight size={17} />
+                {tr("Start Practice")}
+                <ArrowRight size={17} />
               </button>
             </div>
-            {error && <Notice error>{error}</Notice>}
+            {error && <Notice error>{tr(error)}</Notice>}
           </div>
           <aside className="panel practice-aside">
             <Sparkles size={25} />
-            <h3>A little practice adds up.</h3>
+            <h3>{tr("A little practice adds up.")}</h3>
             <ol className="steps-list">
               <li>
-                <span>01</span>Choose the answer that feels right.
+                <span>01</span>
+                {tr("Choose the answer that feels right.")}
               </li>
               <li>
-                <span>02</span>Read the feedback and understand the rule.
+                <span>02</span>
+                {tr("Read the feedback and understand the rule.")}
               </li>
               <li>
-                <span>03</span>Keep going. Mistakes are part of learning.
+                <span>03</span>
+                {tr("Keep going. Mistakes are part of learning.")}
               </li>
             </ol>
             <p>
-              Your first answer counts toward your score. Restart whenever you
-              want to practice again.
+              {tr(
+                "Your first answer counts toward your score. Restart whenever you want to practice again.",
+              )}
             </p>
             <div className="tip">
               <Target size={18} />
-              <p>Doing the research experiment? Take your Before test first.</p>
+              <p>
+                {tr(
+                  "Doing the research experiment? Take your Before test first.",
+                )}
+              </p>
             </div>
             <Link className="text-link" href="/research#assessment">
-              Explore the assessment <ArrowUpRight size={15} />
+              {tr("Explore the assessment")}
+              <ArrowUpRight size={15} />
             </Link>
           </aside>
         </div>
@@ -234,42 +253,48 @@ export function PracticeQuiz() {
         <div className="completion-icon">
           <Trophy size={35} />
         </div>
-        <p className="eyebrow">ONE MORE STEP FORWARD</p>
-        <h2>Practice Complete</h2>
+        <p className="eyebrow">{tr("ONE MORE STEP FORWARD")}</p>
+        <h2>{tr("Practice Complete")}</h2>
         <div className="big-score">
           {Math.round((score / questions.length) * 100)}
           <span>%</span>
         </div>
         <p>
-          You answered{" "}
+          {tr("You answered")}{" "}
           <strong>
-            {score} out of {questions.length}
+            {tr("{correct} out of {total}", {
+              correct: score,
+              total: questions.length,
+            })}
           </strong>{" "}
-          questions correctly.
+          {tr("questions correctly.")}
         </p>
         <p className="muted">
-          {score === questions.length
-            ? "You understood every question in this set. Try a new level next."
-            : "Review the explanations below, then give it another try."}
+          {tr(
+            score === questions.length
+              ? "You understood every question in this set. Try a new level next."
+              : "Review the explanations below, then give it another try.",
+          )}
         </p>
-        {busy && <Notice>Saving your result…</Notice>}
+        {busy && <Notice>{tr("Saving your result…")}</Notice>}
         {saved && (
           <Notice>
-            <Check size={14} /> Your verified practice result has been saved.
+            <Check size={14} />{" "}
+            {tr("Your verified practice result has been saved.")}
           </Notice>
         )}
         {error && (
           <Notice error>
-            {error}{" "}
+            {tr(error)}{" "}
             <button className="text-link" onClick={save} disabled={busy}>
-              Retry saving
+              {tr("Retry saving")}
             </button>
           </Notice>
         )}
         <div className="button-row">
           <button className="button" onClick={start} disabled={busy}>
             <RotateCcw size={15} />
-            Practice Again
+            {tr("Practice Again")}
           </button>
           <button
             className="button secondary"
@@ -279,31 +304,35 @@ export function PracticeQuiz() {
               setError("");
             }}
           >
-            Choose Another Level
+            {tr("Choose Another Level")}
           </button>
           <Link href="/learn" className="text-link">
-            Return to Learning <ArrowRight size={15} />
+            {tr("Return to Learning")}
+            <ArrowRight size={15} />
           </Link>
         </div>
         <details className="review-details">
-          <summary>Review your answers</summary>
+          <summary>{tr("Review your answers")}</summary>
           {answers.map((a, i) => (
             <div key={a.questionId}>
               <strong>
                 {i + 1}. {questions[i].question}
               </strong>
               <p>
-                Your answer: {a.answer} ·{" "}
-                {reviews[i]?.correct ? "Correct" : "Incorrect"}
+                {tr("Your answer:")} {a.answer} ·{" "}
+                {tr(reviews[i]?.correct ? "Correct" : "Incorrect")}
               </p>
-              <p>Correct answer: {reviews[i]?.answer}</p>
-              <p>{reviews[i]?.explanation}</p>
+              <p>
+                {tr("Correct answer:")} {reviews[i]?.answer}
+              </p>
+              <p lang="en">{reviews[i]?.explanation}</p>
             </div>
           ))}
-          <p>Restart to see each correction and explanation again.</p>
+          <p>{tr("Restart to see each correction and explanation again.")}</p>
         </details>
         <Link href="/research#assessment" className="text-link">
-          Continue your research experiment <ArrowRight size={15} />
+          {tr("Continue your research experiment")}
+          <ArrowRight size={15} />
         </Link>
       </div>
     );
@@ -312,8 +341,8 @@ export function PracticeQuiz() {
     <div className="quiz-container">
       <div className="quiz-topline">
         <span className="tag">
-          {level} ·{" "}
-          {category === "All categories" ? "MIXED PRACTICE" : category}
+          {tr(level)} ·{" "}
+          {tr(category === "All categories" ? "MIXED PRACTICE" : category)}
         </span>
         <button
           className="text-link"
@@ -324,25 +353,28 @@ export function PracticeQuiz() {
           }}
         >
           <RotateCcw size={14} />
-          Restart
+          {tr("Restart")}
         </button>
       </div>
       <div className="panel quiz-panel">
         <div className="quiz-progress-label">
           <span>
-            Question {index + 1} of {questions.length}
+            {tr("Question {current} of {total}", {
+              current: index + 1,
+              total: questions.length,
+            })}
           </span>
           <span>
-            Score: {score}/{answers.length}
+            {tr("Score:")} {score}/{answers.length}
           </span>
         </div>
         <progress
           value={index + (feedback ? 1 : 0)}
           max={questions.length}
-          aria-label="Quiz progress"
+          aria-label={tr("Quiz progress")}
         />
-        <p className="eyebrow">{q.category.toUpperCase()}</p>
-        <h2>{q.question}</h2>
+        <p className="eyebrow">{tr(q.category).toLocaleUpperCase()}</p>
+        <h2 lang="en">{q.question}</h2>
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -351,7 +383,7 @@ export function PracticeQuiz() {
         >
           {q.options ? (
             <fieldset className="answer-options" disabled={!!feedback || busy}>
-              <legend className="sr-only">Choose your answer</legend>
+              <legend className="sr-only">{tr("Choose your answer")}</legend>
               {q.options.map((option, i) => (
                 <label
                   key={option}
@@ -365,9 +397,9 @@ export function PracticeQuiz() {
                     onChange={() => setAnswer(option)}
                   />
                   <span className="option-letter">
-                    {String.fromCharCode(65 + i)}
+                    {tr(String.fromCharCode(65 + i))}
                   </span>
-                  <span>{option}</span>
+                  <span lang="en">{option}</span>
                   {feedback && option === feedback.answer && (
                     <Check size={17} />
                   )}
@@ -376,7 +408,7 @@ export function PracticeQuiz() {
             </fieldset>
           ) : (
             <div className="field">
-              <label htmlFor="written-answer">Your answer</label>
+              <label htmlFor="written-answer">{tr("Your answer")}</label>
               <input
                 id="written-answer"
                 maxLength={1000}
@@ -384,7 +416,7 @@ export function PracticeQuiz() {
                 onChange={(e) => setAnswer(e.target.value)}
                 disabled={!!feedback || busy}
                 autoComplete="off"
-                placeholder="Type your answer…"
+                placeholder={tr("Type your answer…")}
               />
             </div>
           )}
@@ -393,27 +425,33 @@ export function PracticeQuiz() {
               className={`feedback ${feedback.correct ? "right" : "wrong"}`}
               role="status"
             >
-              <strong>{feedback.correct ? "Correct!" : "Try again!"}</strong>
+              <strong>
+                {tr(feedback.correct ? "Correct!" : "Try again!")}
+              </strong>
               {!feedback.correct && (
                 <p>
-                  Correct answer: <b>{feedback.answer}</b>
+                  {tr("Correct answer:")} <b>{feedback.answer}</b>
                 </p>
               )}
-              <p>{feedback.explanation}</p>
+              <p lang="en">{feedback.explanation}</p>
             </div>
           ) : null}
-          {error && <Notice error>{error}</Notice>}
+          {error && <Notice error>{tr(error)}</Notice>}
           <div className="quiz-bottom">
             <span>
-              {feedback
-                ? "Take a moment to understand the explanation."
-                : "Take your time. You’re here to learn."}
+              {tr(
+                feedback
+                  ? "Take a moment to understand the explanation."
+                  : "Take your time. You’re here to learn.",
+              )}
             </span>
             {feedback ? (
               <button className="button" type="button" onClick={next}>
-                {index + 1 === questions.length
-                  ? "See Final Score"
-                  : "Next Question"}
+                {tr(
+                  index + 1 === questions.length
+                    ? "See Final Score"
+                    : "Next Question",
+                )}
                 <ArrowRight size={16} />
               </button>
             ) : (
@@ -422,7 +460,7 @@ export function PracticeQuiz() {
                 type="submit"
                 disabled={!answer.trim() || busy}
               >
-                {busy ? "Checking…" : "Check Answer"}
+                {tr(busy ? "Checking…" : "Check Answer")}
                 <ArrowRight size={16} />
               </button>
             )}
@@ -430,7 +468,7 @@ export function PracticeQuiz() {
         </form>
       </div>
       <p className="quiz-footnote">
-        Practice mode · Feedback is shown after each answer.
+        {tr("Practice mode · Feedback is shown after each answer.")}
       </p>
     </div>
   );

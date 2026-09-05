@@ -1,4 +1,5 @@
 "use client";
+import { useLocale } from "@/lib/i18n/provider";
 import {
   ResponsiveContainer,
   BarChart,
@@ -11,15 +12,19 @@ import {
 } from "recharts";
 import type { SkillResult } from "@/lib/types";
 export default function ResearchChart({ data }: { data: SkillResult[] }) {
+  const { tr, number } = useLocale();
+
   return (
     <div
       className="chart-wrap"
       role="img"
-      aria-label="Grouped bar chart comparing Before and After assessment percentages. Exact values appear in the table below."
+      aria-label={tr(
+        "Grouped bar chart comparing Before and After assessment percentages. Exact values appear in the table below.",
+      )}
     >
       <ResponsiveContainer width="100%" height="100%" minWidth={0}>
         <BarChart
-          data={data}
+          data={data.map((item) => ({ ...item, skill: tr(item.skill) }))}
           margin={{ top: 16, right: 8, left: -20, bottom: 8 }}
           barGap={7}
         >
@@ -40,7 +45,7 @@ export default function ResearchChart({ data }: { data: SkillResult[] }) {
             axisLine={false}
             tickLine={false}
             tick={{ fill: "#8b9886", fontSize: 10 }}
-            tickFormatter={(v) => `${v}%`}
+            tickFormatter={(v) => `${number(Number(v))}%`}
           />
           <Tooltip
             cursor={{ fill: "#f4f7f0" }}
@@ -49,7 +54,7 @@ export default function ResearchChart({ data }: { data: SkillResult[] }) {
               border: "1px solid #e0e8db",
               fontSize: 12,
             }}
-            formatter={(v) => `${v}%`}
+            formatter={(v) => `${number(Number(v))}%`}
           />
           <Legend
             iconType="circle"
@@ -58,7 +63,7 @@ export default function ResearchChart({ data }: { data: SkillResult[] }) {
           />
           <Bar
             dataKey="before"
-            name="Before practice"
+            name={tr("Before practice")}
             fill="#cbdac2"
             radius={[5, 5, 0, 0]}
             maxBarSize={44}
@@ -66,7 +71,7 @@ export default function ResearchChart({ data }: { data: SkillResult[] }) {
           />
           <Bar
             dataKey="after"
-            name="After practice"
+            name={tr("After practice")}
             fill="#27795c"
             radius={[5, 5, 0, 0]}
             maxBarSize={44}

@@ -1,15 +1,18 @@
 "use client";
+import { useLocale } from "@/lib/i18n/provider";
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Quote } from "lucide-react";
 import { prompts } from "@/data/prompts";
 import { CopyButton } from "./copy-button";
 export function PromptLibrary() {
+  const { tr } = useLocale();
+
   const [filter, setFilter] = useState("All prompts");
   const filters = ["All prompts", ...new Set(prompts.map((p) => p.category))];
   return (
     <>
-      <div className="tabs" aria-label="Prompt category">
+      <div className="tabs" aria-label={tr("Prompt category")}>
         {filters.map((f) => (
           <button
             key={f}
@@ -17,7 +20,7 @@ export function PromptLibrary() {
             className={`tab ${filter === f ? "active" : ""}`}
             onClick={() => setFilter(f)}
           >
-            {f}
+            {tr(f)}
           </button>
         ))}
       </div>
@@ -27,7 +30,7 @@ export function PromptLibrary() {
             (p) => filter === "All prompts" || p.category === filter,
           ).length
         }{" "}
-        prompts to get you started
+        {tr("prompts to get you started")}
       </p>
       <div className="card-grid">
         {prompts
@@ -35,17 +38,19 @@ export function PromptLibrary() {
           .map((p) => (
             <article className="panel prompt-card" key={p.id}>
               <div className="prompt-card-top">
-                <span className="tag">{p.category}</span>
-                <span>{p.level}</span>
+                <span className="tag">{tr(p.category)}</span>
+                <span>{tr(p.level)}</span>
               </div>
               <Quote size={22} />
-              <h3>{p.title}</h3>
-              <p>{p.text}</p>
+              <h3>{tr(p.title)}</h3>
+              <p lang="en">{p.text}</p>
               <div className="prompt-actions">
                 <CopyButton text={p.text} eventId={p.id} />
                 <Link
                   href={`/assistant?prompt=${encodeURIComponent(p.text)}`}
-                  aria-label={`Try ${p.title} in the assistant`}
+                  aria-label={tr("Try {title} in the assistant", {
+                    title: tr(p.title),
+                  })}
                 >
                   <ArrowUpRight size={19} />
                 </Link>

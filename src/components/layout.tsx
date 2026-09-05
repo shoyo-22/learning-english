@@ -1,4 +1,5 @@
 "use client";
+import { LanguageSwitcher, useLocale } from "@/lib/i18n/provider";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -14,19 +15,22 @@ const links = [
   ["About", "/about"],
 ];
 export function Header() {
+  const { tr } = useLocale();
+
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   return (
     <header className="site-header">
       <div className="nav-wrap">
-        <Link href="/" className="brand" aria-label="English Lab home">
+        <Link href="/" className="brand" aria-label={tr("English Lab home")}>
           <span className="brand-mark">
             <Sparkles size={21} />
           </span>
-          english<span className="brand-light">lab</span>
+          {"english"}
+          <span className="brand-light">{"lab"}</span>
           <span className="brand-dot">.</span>
         </Link>
-        <nav className="desktop-nav" aria-label="Main navigation">
+        <nav className="desktop-nav" aria-label={tr("Main navigation")}>
           {links.map(([name, href]) => (
             <Link
               key={href}
@@ -34,16 +38,18 @@ export function Header() {
               href={href}
               aria-current={pathname === href ? "page" : undefined}
             >
-              {name}
+              {tr(name)}
             </Link>
           ))}
         </nav>
         <Link href="/learn" className="button small nav-cta">
-          Start Learning <ArrowUpRight size={15} />
+          {tr("Start Learning")}
+          <ArrowUpRight size={15} />
         </Link>
+        <LanguageSwitcher />
         <button
           className="icon-button menu-toggle"
-          aria-label={open ? "Close menu" : "Open menu"}
+          aria-label={tr(open ? "Close menu" : "Open menu")}
           aria-expanded={open}
           aria-controls="mobile-navigation"
           onClick={() => setOpen(!open)}
@@ -55,7 +61,7 @@ export function Header() {
         <nav
           id="mobile-navigation"
           className="mobile-nav"
-          aria-label="Mobile navigation"
+          aria-label={tr("Mobile navigation")}
         >
           {links.map(([name, href]) => (
             <Link
@@ -64,7 +70,7 @@ export function Header() {
               onClick={() => setOpen(false)}
               aria-current={pathname === href ? "page" : undefined}
             >
-              {name}
+              {tr(name)}
               <ArrowRight size={16} />
             </Link>
           ))}
@@ -74,6 +80,8 @@ export function Header() {
   );
 }
 export function Footer() {
+  const { tr } = useLocale();
+
   return (
     <footer className="site-footer">
       <div>
@@ -81,14 +89,21 @@ export function Footer() {
           <span className="brand-mark">
             <Sparkles size={18} />
           </span>
-          english<span className="brand-light">lab</span>.
+          {"english"}
+          <span className="brand-light">{"lab"}</span>.
         </Link>
-        <p>A little practice. A world of possibilities.</p>
+        <p>{tr("A little practice. A world of possibilities.")}</p>
+        <p className="locale-note">
+          {tr(
+            "English exercises and demo conversations stay in English in every interface language.",
+          )}
+        </p>
       </div>
       <div>
-        <span>An independent educational research project</span>
+        <span>{tr("An independent educational research project")}</span>
         <Link href="/about#privacy">
-          Privacy & research ethics <ArrowUpRight size={14} />
+          {tr("Privacy & research ethics")}
+          <ArrowUpRight size={14} />
         </Link>
       </div>
     </footer>

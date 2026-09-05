@@ -1,7 +1,10 @@
 "use client";
+import { useLocale } from "@/lib/i18n/provider";
 import { useEffect, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 export function HomeStats() {
+  const { tr } = useLocale();
+
   const [data, setData] = useState<{
     practiceSessions: number;
     aiSessions: number;
@@ -28,16 +31,17 @@ export function HomeStats() {
         ].map(([value, label]) => (
           <div key={label}>
             <strong>
-              {value}
+              {tr(value)}
               <ArrowUpRight size={18} />
             </strong>
-            <span>{label}</span>
+            <span>{tr(label)}</span>
           </div>
         ))}
       </div>
       <p className="stats-caption">
-        Learning activity comes from stored records. A dash means live data is
-        unavailable.
+        {tr(
+          "Learning activity comes from stored records. A dash means live data is unavailable.",
+        )}
       </p>
     </div>
   );

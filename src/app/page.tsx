@@ -1,3 +1,4 @@
+import { getTranslator } from "@/lib/i18n/server";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -49,44 +50,62 @@ const skills = [
     desc: "Read with curiosity. Understand more.",
   },
 ];
-export default function Home() {
+export default async function Home() {
+  const { locale, tr } = await getTranslator();
+
   return (
     <>
       <section className="hero container">
         <div className="hero-copy">
           <div className="pill">
-            <span className="status-dot" /> YOUR ENGLISH. A NEW POSSIBILITY.
+            <span className="status-dot" />{" "}
+            {tr("YOUR ENGLISH. A NEW POSSIBILITY.")}
           </div>
           <h1>
-            Learn English
-            <br />
-            smarter with
-            <br />
-            <span>
-              ChatGPT<span className="headline-period">.</span>
-            </span>
+            {locale === "kk" ? (
+              <>
+                {tr("Learn English")}
+                <br />
+                <span>{tr("With ChatGPT")}</span>
+                <br />
+                {tr("Learn with confidence.")}
+              </>
+            ) : (
+              <>
+                {tr("Learn English")}
+                <br />
+                {tr("smarter with")}
+                <br />
+                <span>
+                  ChatGPT<span className="headline-period">.</span>
+                </span>
+              </>
+            )}
           </h1>
           <p>
-            Your curiosity meets a little AI. Explore new words, build
-            confidence, and make progress—one conversation at a time.
+            {tr(
+              "Your curiosity meets a little AI. Explore new words, build confidence, and make progress—one conversation at a time.",
+            )}
           </p>
           <div className="button-row">
             <Link href="/learn" className="button">
-              Start Learning <ArrowUpRight size={18} />
+              {tr("Start Learning")}
+              <ArrowUpRight size={18} />
             </Link>
             <Link href="/research" className="button secondary">
-              Explore Research <ArrowRight size={17} />
+              {tr("Explore Research")}
+              <ArrowRight size={17} />
             </Link>
           </div>
           <div className="hero-footnote">
             <span>
-              <Check size={15} /> Free to explore
+              <Check size={15} /> {tr("Free to explore")}
             </span>
             <span>
-              <Check size={15} /> No account needed
+              <Check size={15} /> {tr("No account needed")}
             </span>
             <span>
-              <Check size={15} /> A1–B2 levels
+              <Check size={15} /> {tr("A1–B2 levels")}
             </span>
           </div>
         </div>
@@ -96,7 +115,7 @@ export default function Home() {
             <span className="mini-icon lavender">
               <MessageCircle size={17} />
             </span>
-            A little feedback. A big difference.
+            {tr("A little feedback. A big difference.")}
           </div>
           <div className="conversation-card">
             <div className="conversation-header">
@@ -104,13 +123,13 @@ export default function Home() {
                 <Sparkles size={20} />
               </span>
               <div>
-                <strong>Your English companion</strong>
-                <span>Learn by asking. Grow by doing.</span>
+                <strong>{tr("Your English companion")}</strong>
+                <span>{tr("Learn by asking. Grow by doing.")}</span>
               </div>
-              <span className="example-label">EXAMPLE</span>
+              <span className="example-label">{tr("EXAMPLE")}</span>
             </div>
             <div className="conversation-body">
-              <div className="student-label">YOU</div>
+              <div className="student-label">{tr("YOU")}</div>
               <div className="student-bubble">I go to school yesterday.</div>
               <div className="tutor-label">
                 <Sparkles size={14} /> ENGLISH LAB
@@ -123,18 +142,19 @@ export default function Home() {
                   I <mark>went</mark> to school yesterday.
                 </div>
                 <p>
-                  “Yesterday” tells us this happened in the past. Use{" "}
-                  <strong>went</strong>, the past form of “go”.
+                  {tr("“Yesterday” tells us this happened in the past. Use")}{" "}
+                  <strong>went</strong>
+                  {tr(", the past form of “go”.")}
                 </p>
                 <div className="example-sentence">
-                  One more example
+                  {tr("One more example")}
                   <br />
                   <strong>She went to the library last week.</strong>
                 </div>
               </div>
             </div>
             <Link href="/assistant" className="conversation-footer">
-              Let’s try your sentence{" "}
+              {tr("Let’s try your sentence")}{" "}
               <span>
                 <ArrowRight size={18} />
               </span>
@@ -145,8 +165,8 @@ export default function Home() {
               <Zap size={19} />
             </span>
             <div>
-              <strong>Small steps. Real understanding.</strong>
-              <span>Your next “aha!” moment starts here.</span>
+              <strong>{tr("Small steps. Real understanding.")}</strong>
+              <span>{tr("Your next “aha!” moment starts here.")}</span>
             </div>
           </div>
           <span className="decor-star">✳</span>
@@ -155,12 +175,15 @@ export default function Home() {
       <HomeStats />
       <section className="container section">
         <SectionHeading
-          eyebrow="FIVE SKILLS. ENDLESS POSSIBILITIES."
-          title="Find your starting point."
-          description="A better way to practice, whatever you want to work on."
+          eyebrow={tr("FIVE SKILLS. ENDLESS POSSIBILITIES.")}
+          title={tr("Find your starting point.")}
+          description={tr(
+            "A better way to practice, whatever you want to work on.",
+          )}
         >
           <Link className="text-link" href="/learn">
-            Explore all skills <ArrowRight size={16} />
+            {tr("Explore all skills")}
+            <ArrowRight size={16} />
           </Link>
         </SectionHeading>
         <div className="skill-grid">
@@ -174,10 +197,11 @@ export default function Home() {
                 <Icon size={24} />
               </div>
               <span className="card-number">0{i + 1}</span>
-              <h3>{title}</h3>
-              <p>{desc}</p>
+              <h3>{tr(title)}</h3>
+              <p>{tr(desc)}</p>
               <span className="card-bottom">
-                Let’s learn <ArrowUpRight size={18} />
+                {tr("Let’s learn")}
+                <ArrowUpRight size={18} />
               </span>
             </Link>
           ))}
@@ -186,9 +210,11 @@ export default function Home() {
       <section className="why-section">
         <div className="container section">
           <SectionHeading
-            eyebrow="A STUDY PARTNER THAT KEEPS UP"
-            title="Less hesitation. More learning."
-            description="Use AI to ask questions, try things out, and understand your mistakes."
+            eyebrow={tr("A STUDY PARTNER THAT KEEPS UP")}
+            title={tr("Less hesitation. More learning.")}
+            description={tr(
+              "Use AI to ask questions, try things out, and understand your mistakes.",
+            )}
           />
           <div className="benefits-grid">
             {[
@@ -215,8 +241,8 @@ export default function Home() {
             ].map(({ icon: Icon, title, desc }) => (
               <article key={title}>
                 <Icon size={24} />
-                <h3>{title}</h3>
-                <p>{desc}</p>
+                <h3>{tr(title)}</h3>
+                <p>{tr(desc)}</p>
               </article>
             ))}
           </div>
@@ -226,30 +252,35 @@ export default function Home() {
         <div className="research-banner">
           <div>
             <span className="pill">
-              <FlaskConical size={14} /> LEARNING MEETS RESEARCH
+              <FlaskConical size={14} /> {tr("LEARNING MEETS RESEARCH")}
             </span>
-            <h2>A question worth exploring.</h2>
+            <h2>{tr("A question worth exploring.")}</h2>
             <p>
-              How can ChatGPT support English learning? Our research connects
-              hands-on practice with a transparent Before & After experiment.
+              {tr(
+                "How can ChatGPT support English learning? Our research connects hands-on practice with a transparent Before & After experiment.",
+              )}
             </p>
             <Link href="/research" className="button">
-              See the research <ArrowUpRight size={17} />
+              {tr("See the research")}
+              <ArrowUpRight size={17} />
             </Link>
           </div>
           <div className="experiment-mini">
             <div>
-              <span>01</span>Before test
+              <span>01</span>
+              {tr("Before test")}
             </div>
             <ArrowRight />
             <div>
-              <span>02</span>AI practice
+              <span>02</span>
+              {tr("AI practice")}
             </div>
             <ArrowRight />
             <div>
-              <span>03</span>After test
+              <span>03</span>
+              {tr("After test")}
             </div>
-            <p>Observe the difference. Understand the limitations.</p>
+            <p>{tr("Observe the difference. Understand the limitations.")}</p>
           </div>
         </div>
       </section>

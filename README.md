@@ -102,7 +102,9 @@ src/lib/scoring.ts       Answer normalization and trusted scoring
 supabase/migrations/     Reproducible PostgreSQL schema and aggregate functions
 ```
 
-The primary language is English. Educational text is kept in centralized data files; a future translation dictionary can be added without duplicating page components. Styling uses CSS tokens and Tailwind tooling; semantic native controls are used where a component library would add unnecessary complexity. Animations are restrained CSS transitions and respect reduced-motion preferences.
+The interface supports English (`en`), Russian (`ru`), and Kazakh (`kk`). The header language selector saves a one-year, same-site preference cookie; English is the default. URLs and anonymous research identifiers stay the same. Pages, metadata, navigation, instructions, errors, charts, and content descriptions are translated. English exercises, answer options, answer explanations, copyable prompts, and demo conversations intentionally remain in English; switching languages does not alter assessment scoring or reset in-progress client state. Teaching passages are marked with `lang="en"` where appropriate.
+
+Translations live in `src/lib/i18n/messages.json`, keyed by the original English message with matching `ru` and `kk` entries. Use complete messages with named placeholders for dynamic values. `getTranslator()` reads the validated cookie in server components; `useLocale()` provides translations to client components. Unknown text falls back to its original value. Cookie-dependent pages render per request. Tests check dictionary coverage, placeholder parity, and optional server HTML across all eight routes and three locales. Styling uses CSS tokens and Tailwind tooling; semantic native controls are used where a component library would add unnecessary complexity. Animations are restrained CSS transitions and respect reduced-motion preferences.
 
 ## Quality checks
 

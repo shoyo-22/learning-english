@@ -2550,3 +2550,79 @@ progress::-moz-progress-bar {
     display: inline-flex;
   }
 }
+
+/* Locale names remain readable at every breakpoint, including Cyrillic labels. */
+.language-switcher {
+  flex-shrink: 0;
+}
+.language-switcher select {
+  min-height: 44px;
+  max-width: 112px;
+  padding: 8px 24px 8px 10px;
+  border: 1px solid var(--border, #dde5d9);
+  border-radius: 10px;
+  background: var(--paper, #fff);
+  color: inherit;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.language-switcher select:focus-visible {
+  outline: 2px solid #27795c;
+  outline-offset: 3px;
+}
+html:not([lang="en"]) .nav-cta {
+  display: none;
+}
+html:not([lang="en"]) .desktop-nav {
+  gap: 14px;
+}
+html:not([lang="en"]) .hero h1 {
+  font-size: clamp(38px, 5vw, 68px);
+}
+@media (max-width: 1100px) {
+  html:not([lang="en"]) .desktop-nav {
+    display: none;
+  }
+  html:not([lang="en"]) .menu-toggle {
+    display: inline-flex;
+  }
+}
+@media (max-width: 400px) {
+  .nav-wrap {
+    gap: 8px;
+  }
+  .language-switcher select {
+    max-width: 96px;
+    padding-left: 6px;
+  }
+}
+.language-switcher select {
+  width: 108px;
+  max-width: 108px;
+}
+.locale-note {
+  max-width: 420px;
+}
+@media (max-width: 360px) {
+  .nav-wrap {
+    padding-inline: 12px;
+    gap: 8px;
+  }
+  .nav-wrap .brand {
+    font-size: 18px;
+    gap: 6px;
+  }
+  .nav-wrap .brand-mark {
+    width: 28px;
+    height: 28px;
+  }
+  .nav-wrap .menu-toggle {
+    flex: 0 0 40px;
+  }
+  .language-switcher select {
+    width: 102px;
+    max-width: 102px;
+    padding-right: 18px;
+  }
+}

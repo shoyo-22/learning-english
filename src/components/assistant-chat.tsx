@@ -1,4 +1,5 @@
 "use client";
+import { useLocale } from "@/lib/i18n/provider";
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
@@ -41,6 +42,8 @@ const examples = [
   },
 ];
 export function AssistantChat() {
+  const { tr } = useLocale();
+
   const params = useSearchParams();
   const [input, setInput] = useState(
     (params.get("prompt") || "").slice(0, 2000),
@@ -100,12 +103,12 @@ export function AssistantChat() {
             <Sparkles size={19} />
           </span>
           <div>
-            <strong>Your English companion · Demo</strong>
-            <span>Ask freely. Learn one thing at a time.</span>
+            <strong>{tr("Your English companion · Demo")}</strong>
+            <span>{tr("Ask freely. Learn one thing at a time.")}</span>
           </div>
           <button
             className="icon-button"
-            aria-label="Clear conversation"
+            aria-label={tr("Clear conversation")}
             disabled={busy || !messages.length}
             onClick={() => {
               setMessages([]);
@@ -117,8 +120,9 @@ export function AssistantChat() {
           </button>
         </div>
         <Notice>
-          Demo mode — prepared responses, not a live AI model. No OpenAI
-          connection or API key is used.
+          {tr(
+            "Demo mode — prepared responses, not a live AI model. No OpenAI connection or API key is used.",
+          )}
         </Notice>
         <div className="chat-messages" aria-live="polite" aria-busy={busy}>
           {!messages.length ? (
@@ -126,10 +130,11 @@ export function AssistantChat() {
               <span className="welcome-spark">
                 <Sparkles size={31} />
               </span>
-              <h2>What will you learn today?</h2>
+              <h2>{tr("What will you learn today?")}</h2>
               <p>
-                A sentence to fix, a word to understand, or a conversation to
-                start. I’m here to help you practice.
+                {tr(
+                  "A sentence to fix, a word to understand, or a conversation to start. I’m here to help you practice.",
+                )}
               </p>
               <div className="chat-examples">
                 {examples.slice(0, 4).map(({ icon: Icon, title, text }) => (
@@ -141,7 +146,7 @@ export function AssistantChat() {
                     }}
                   >
                     <Icon size={16} />
-                    {title}
+                    {tr(title)}
                     <span>↗</span>
                   </button>
                 ))}
@@ -150,27 +155,31 @@ export function AssistantChat() {
           ) : (
             messages.map((m, i) => (
               <div key={i} className={`chat-message ${m.role}`}>
-                <span>{m.role === "user" ? "YOU" : "ENGLISH LAB · DEMO"}</span>
-                <div>{m.content}</div>
+                <span>
+                  {tr(m.role === "user" ? "YOU" : "ENGLISH LAB · DEMO")}
+                </span>
+                <div lang={m.role === "assistant" ? "en" : undefined}>
+                  {m.content}
+                </div>
               </div>
             ))
           )}
           {busy && (
             <div className="thinking">
               <LoaderCircle size={16} className="loading-spin" />
-              Preparing example…
+              {tr("Preparing example…")}
             </div>
           )}
           {error && (
             <Notice error>
-              {error}
+              {tr(error)}
               <div>
                 <button
                   className="text-link"
                   disabled={busy}
                   onClick={() => send(true)}
                 >
-                  Retry message
+                  {tr("Retry message")}
                 </button>
               </div>
             </Notice>
@@ -185,12 +194,12 @@ export function AssistantChat() {
           }}
         >
           <label htmlFor="chat-input" className="sr-only">
-            Your message
+            {tr("Your message")}
           </label>
           <textarea
             ref={inputRef}
             id="chat-input"
-            placeholder="Ask a question, or write a sentence to improve…"
+            placeholder={tr("Ask a question, or write a sentence to improve…")}
             maxLength={2000}
             value={input}
             disabled={busy}
@@ -203,9 +212,12 @@ export function AssistantChat() {
             }}
           />
           <div className="compose-bottom">
-            <span>{input.length}/2000 · Shift + Enter for a new line</span>
+            <span>
+              {input.length}
+              {tr("/2000 · Shift + Enter for a new line")}
+            </span>
             <button
-              aria-label="Send message"
+              aria-label={tr("Send message")}
               disabled={busy || !input.trim()}
               className="send-button"
             >
@@ -218,19 +230,21 @@ export function AssistantChat() {
           </div>
         </form>
         <p className="chat-disclaimer">
-          Prepared examples only. For feedback on your own writing, ask your
-          teacher.
+          {tr(
+            "Prepared examples only. For feedback on your own writing, ask your teacher.",
+          )}
         </p>
-        {tracking && <p className="chat-disclaimer">{tracking}</p>}
+        {tracking && <p className="chat-disclaimer">{tr(tracking)}</p>}
       </section>
       <aside className="assistant-side">
         <div className="panel">
-          <p className="eyebrow">A GOOD PLACE TO START</p>
-          <h3>Try asking…</h3>
+          <p className="eyebrow">{tr("A GOOD PLACE TO START")}</p>
+          <h3>{tr("Try asking…")}</h3>
           {examples.map(({ title, text }) => (
             <button
               key={title}
               className="example-prompt-button"
+              lang="en"
               disabled={busy}
               onClick={() => {
                 setInput(text);
@@ -245,14 +259,15 @@ export function AssistantChat() {
         <div className="tip">
           <Sparkles size={18} />
           <p>
-            Tell your companion your approximate level, ask for a simple
-            explanation, and try your own answer before asking for help.
+            {tr(
+              "Tell your companion your approximate level, ask for a simple explanation, and try your own answer before asking for help.",
+            )}
           </p>
         </div>
         <p className="privacy-note">
-          Your messages are processed by this app to select prepared responses.
-          They are not sent to OpenAI or stored in the research database. Please
-          avoid personal information.
+          {tr(
+            "Your messages are processed by this app to select prepared responses. They are not sent to OpenAI or stored in the research database. Please avoid personal information.",
+          )}
         </p>
       </aside>
     </div>

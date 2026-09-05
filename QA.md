@@ -59,3 +59,12 @@ Supabase configuration was found in `.env.example` with a publishable key in the
 - In-memory tests additionally exercised recovery from empty, tables-only, and complete schemas, preserved existing assessments, applied recovery twice, and rejected an incompatible schema atomically. The reusable SQL smoke test also runs in these tests, with before/after aggregate equality proving fixture rollback.
 - Final checks: TypeScript, ESLint, and production build passed. Connected test run: 13 passed, 1 intentionally skipped (the unavailable-storage HTTP scenario).
 - Browser verification: Research displayed “LIVE DATABASE · ANONYMOUS RECORDS”, zero completed pairs, and an enabled Start Before Test button. No assessment was submitted.
+
+## English / Russian / Kazakh localization
+
+- Localized all eight pages, route metadata, navigation, instructional and research content, client errors, chart axes/legends/table labels, and accessibility labels. English exercises, answer options/explanations, prompts, and demo responses retain their teaching language and stable internal identifiers.
+- Browser checks: language selection persisted across navigation and reload; switching Kazakh → Russian during a quiz preserved the selected answer and allowed correct scoring. Switching the finished result back to Kazakh preserved the score and translated the unavailable-storage notice.
+- The practice completion check ran on an isolated local production server with Supabase disabled. It created no hosted research scores or practice activity.
+- All eight routes had no horizontal overflow at 390px in Russian and Kazakh. Chart and exact-value table labels were checked in Kazakh. Header spacing was adjusted for 320px screens.
+- Automated coverage checks validate translated content, static translation calls, bounded locale input, and matching interpolation placeholders. The HTTP localization check covers all eight pages in each of en/ru/kk plus invalid-cookie fallback.
+- Final validation: 17 connected-mode tests passed; the unavailable-storage HTTP scenario passed separately on the isolated server. ESLint, strict TypeScript, and the final production build passed. Decimal scores use locale-aware formatting (62.5 in English; 62,5 in Russian and Kazakh).
