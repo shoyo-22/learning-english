@@ -31,7 +31,7 @@ export default function ResearchChart({ data }: { data: SkillResult[] }) {
           <CartesianGrid
             strokeDasharray="3 4"
             vertical={false}
-            stroke="#e8eee5"
+            stroke="#e4eaf3"
           />
           <XAxis
             dataKey="skill"
@@ -43,7 +43,7 @@ export default function ResearchChart({ data }: { data: SkillResult[] }) {
                 x={x}
                 y={Number(y) + 12}
                 textAnchor="middle"
-                fill="#61716a"
+                fill="#5d6b80"
                 fontSize={12}
               >
                 {String(payload.value)
@@ -61,17 +61,17 @@ export default function ResearchChart({ data }: { data: SkillResult[] }) {
             domain={[0, 100]}
             axisLine={false}
             tickLine={false}
-            tick={{ fill: "#61716a", fontSize: 12 }}
+            tick={{ fill: "#5d6b80", fontSize: 12 }}
             tickFormatter={(v) => `${number(Number(v))}%`}
           />
           <Tooltip
-            cursor={{ fill: "#f4f7f0" }}
+            cursor={{ fill: "#eef3fa" }}
             contentStyle={{
               borderRadius: 10,
-              border: "1px solid #e0e8db",
+              border: "1px solid #dbe3ef",
               fontSize: 12,
             }}
-            itemStyle={{ color: "#203d32" }}
+            itemStyle={{ color: "#152a44" }}
             formatter={(v) => `${number(Number(v))}%`}
           />
           <Legend
@@ -79,13 +79,13 @@ export default function ResearchChart({ data }: { data: SkillResult[] }) {
             iconSize={7}
             wrapperStyle={{ fontSize: 12, paddingTop: 12 }}
             formatter={(value) => (
-              <span style={{ color: "#445b4f" }}>{value}</span>
+              <span style={{ color: "#42546e" }}>{value}</span>
             )}
           />
           <Bar
             dataKey="before"
             name={tr("Before practice")}
-            fill="#c0cfab"
+            fill="#e6c46a"
             radius={[5, 5, 0, 0]}
             maxBarSize={44}
             isAnimationActive={false}
@@ -93,7 +93,7 @@ export default function ResearchChart({ data }: { data: SkillResult[] }) {
           <Bar
             dataKey="after"
             name={tr("After practice")}
-            fill="#21654c"
+            fill="#1a3f6f"
             radius={[5, 5, 0, 0]}
             maxBarSize={44}
             isAnimationActive={false}

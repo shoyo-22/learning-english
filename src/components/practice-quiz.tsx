@@ -156,7 +156,7 @@ export function PracticeQuiz() {
       <>
         <div className="practice-layout">
           <div className="panel practice-setup">
-            <div className="skill-icon mint">
+            <div className="skill-icon brand-tint">
               <Target size={25} />
             </div>
             <h2 ref={headingRef} tabIndex={-1}>

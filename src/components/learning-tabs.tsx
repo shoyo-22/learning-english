@@ -26,7 +26,7 @@ export function LearningTabs() {
         <TabsContent key={item.name} value={item.name}>
           <div className="learning-layout">
             <article className="panel learning-main">
-              <div className="skill-icon mint">
+              <div className="skill-icon brand-tint">
                 <BookOpen size={24} />
               </div>
               <span className="eyebrow">

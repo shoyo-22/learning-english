@@ -1,8 +1,9 @@
 import { getTranslator } from "@/lib/i18n/server";
 import { PageIntro } from "@/components/ui";
-import { projectInfo as p } from "@/data/project";
+import { projectInfo as p, projectPeople } from "@/data/project";
 import { FlaskConical, ShieldCheck, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 export async function generateMetadata() {
   const { tr } = await getTranslator();
   return { title: tr("About the Research Project") };
@@ -21,7 +22,7 @@ export default async function Page() {
       />
       <div className="about-layout">
         <article className="panel about-main">
-          <div className="skill-icon mint">
+          <div className="skill-icon brand-tint">
             <FlaskConical size={24} />
           </div>
           <p className="eyebrow">{tr("RESEARCH TOPIC")}</p>
@@ -58,11 +59,24 @@ export default async function Page() {
         <aside>
           <div className="panel project-people">
             <p className="eyebrow">{tr("BEHIND THE PROJECT")}</p>
-            <label>{tr("Student researcher")}</label>
-            <strong>{tr(p.author)}</strong>
-            <label>{tr("Research supervisor")}</label>
-            <strong>{tr(p.supervisor)}</strong>
-            <span className="tag">{tr("Project details to be finalized")}</span>
+            <ul className="person-list">
+              {projectPeople.map((person) => (
+                <li key={person.photo} className="person">
+                  <Image
+                    className="person-photo"
+                    src={person.photo}
+                    alt={tr(person.name)}
+                    width={72}
+                    height={72}
+                    sizes="72px"
+                  />
+                  <div>
+                    <strong>{tr(person.name)}</strong>
+                    <span>{tr(person.role)}</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
           <div className="panel privacy-card" id="privacy">
             <ShieldCheck size={25} />

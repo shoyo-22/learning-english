@@ -1,7 +1,7 @@
 export const projectInfo = {
   title: "The Importance of ChatGPT in Learning English",
-  author: "[Student Name]",
-  supervisor: "[Supervisor Name]",
+  author: "Muratbek Kausar",
+  supervisor: "Tastanbek Diana",
   aim: "Explore how guided use of ChatGPT can support independent English learning and compare performance on a short assessment before and after practice.",
   objectives: [
     "Explore practical uses of AI across five English skills.",
@@ -16,6 +16,18 @@ export const projectInfo = {
   conclusion:
     "Final conclusions will be written after data collection and analysis. Usage alone does not demonstrate learning improvement, and a Before/After comparison without a control group cannot establish that AI caused a change.",
 };
+export const projectPeople = [
+  {
+    name: projectInfo.author,
+    role: "Grade 10 “A” student · Website developer",
+    photo: "/people/muratbek-kausar.jpg",
+  },
+  {
+    name: projectInfo.supervisor,
+    role: "English teacher · Project supervisor",
+    photo: "/people/tastanbek-diana.jpg",
+  },
+];
 // Illustrative values only. Never seeded into the research database.
 export const demoResearch = [
   { skill: "Vocabulary" as const, before: 50, after: 75 },

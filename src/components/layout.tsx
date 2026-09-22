@@ -15,11 +15,11 @@ import {
   MessageCircle,
   Mic,
   Quote,
-  Sparkles,
   Target,
   X,
 } from "lucide-react";
 import { Button } from "./kit/button";
+import { UnionJack } from "./union-jack";
 import { Badge } from "./kit/badge";
 import {
   Sheet,
@@ -126,8 +126,8 @@ export function Header() {
           </div>
           <div className="header-actions">
             <span className="header-note">
-              <Sparkles size={15} />
-              {tr("A1–B2 levels")}
+              <UnionJack width={22} className="flag-mark" />
+              <span className="header-note-label">{tr("A1–B2 levels")}</span>
             </span>
             <LanguageSwitcher />
             <Sheet open={open} onOpenChange={setOpen}>

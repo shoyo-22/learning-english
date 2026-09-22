@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { SectionHeading } from "@/components/ui";
 import { HomeStats } from "@/components/stats";
+import { UnionJack } from "@/components/union-jack";
 const skills = [
   {
     title: "Vocabulary",
@@ -57,8 +58,8 @@ export default async function Home() {
     <>
       <section className="hero container">
         <div className="hero-copy">
-          <div className="pill">
-            <span className="status-dot" />{" "}
+          <div className="pill hero-pill">
+            <UnionJack width={20} className="flag-mark" />
             {tr("YOUR ENGLISH. A NEW POSSIBILITY.")}
           </div>
           <h1>
@@ -161,7 +162,7 @@ export default async function Home() {
             </Link>
           </div>
           <div className="floating-note">
-            <span className="mini-icon mint">
+            <span className="mini-icon brand-tint">
               <Zap size={19} />
             </span>
             <div>
