@@ -16,6 +16,55 @@ test(
     assert.match(session.headers.get("set-cookie") || "", /httponly/i);
     const info = await session.json();
     assert.equal(info.storage, false);
+    assert.equal(info.participantName, null);
+    assert.equal(info.participantReady, false);
+    for (const path of [
+      "/api/admin/results",
+      "/api/admin/export?kind=assessments",
+    ]) {
+      const response = await fetch(`${base}${path}`);
+      assert.ok([401, 503].includes(response.status));
+      assert.equal(response.headers.get("cache-control"), "no-store");
+      assert.deepEqual(Object.keys(await response.json()), ["error"]);
+    }
+    assert.equal(
+      (await post("/api/participant", { name: "Test student" })).status,
+      503,
+    );
+    assert.equal(
+      (
+        await post(
+          "/api/participant",
+          { name: "Test student" },
+          "https://untrusted.example",
+        )
+      ).status,
+      403,
+    );
+    assert.equal(
+      (await post("/api/admin/session", { password: "invalid-password" }))
+        .status,
+      503,
+    );
+    assert.equal(
+      (
+        await post(
+          "/api/admin/session",
+          { password: "invalid-password" },
+          "https://untrusted.example",
+        )
+      ).status,
+      403,
+    );
+    assert.equal(
+      (
+        await fetch(`${base}/api/admin/session`, {
+          method: "DELETE",
+          headers: { Origin: "https://untrusted.example" },
+        })
+      ).status,
+      403,
+    );
     const q = await (
       await fetch(`${base}/api/practice?level=B2&category=Grammar`)
     ).json();

@@ -45,3 +45,43 @@ export type AssessmentResult = {
   speaking_score: number;
   writing_score: number;
 };
+export type AdminScore = {
+  total: number;
+  vocabulary: number;
+  grammar: number;
+  speaking: number;
+  writing: number;
+  at: string;
+};
+export type AdminParticipant = {
+  shortId: string;
+  name: string | null;
+  before: AdminScore | null;
+  after: AdminScore | null;
+  difference: number | null;
+  lastActivityAt: string;
+};
+export type AdminPractice = {
+  shortId: string;
+  name: string | null;
+  level: Level;
+  category: string;
+  correct: number;
+  total: number;
+  percentage: number;
+  completedAt: string;
+};
+export type AdminResults = {
+  summary: {
+    participants: number;
+    named: number;
+    pairs: number;
+    before: number | null;
+    after: number | null;
+    difference: number | null;
+    practiceSessions: number;
+  };
+  participants: AdminParticipant[];
+  practice: AdminPractice[];
+  truncated: { participants: boolean; practice: boolean };
+};

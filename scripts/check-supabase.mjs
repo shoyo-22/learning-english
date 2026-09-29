@@ -15,7 +15,7 @@ const db = createClient(url, key, {
   },
 });
 const tables = {
-  anonymous_sessions: "session_id,created_at,last_seen_at",
+  anonymous_sessions: "session_id,created_at,last_seen_at,display_name",
   quiz_sessions:
     "id,session_id,level,category,total_questions,correct_answers,score_percentage,completed_at",
   quiz_attempts:
@@ -43,11 +43,25 @@ console.log(
   `${summaryValid ? "OK" : "FAIL"} RPC research_summary${error ? ` (${error.code || "connection error"})` : ""}`,
 );
 // Do not invoke mutation RPCs to test their existence or write synthetic research evidence.
+const { data: admin, error: adminError } = await db.rpc("admin_results", {
+  p_version: "v1",
+  p_participant_limit: 1,
+  p_practice_limit: 1,
+});
+const adminValid =
+  !adminError &&
+  Array.isArray(admin?.participants) &&
+  Array.isArray(admin?.practice) &&
+  typeof admin?.summary?.participants === "number";
+failed ||= !adminValid;
+console.log(
+  `${adminValid ? "OK" : "FAIL"} RPC admin_results${adminError ? ` (${adminError.code || "connection error"})` : ""}`,
+);
 console.log(
   "Read-only check: no credentials, participant rows, or aggregate values were printed.",
 );
 if (failed)
   console.error(
-    "Apply 202609050002_restore_schema_and_rpc.sql in the project SQL Editor, then rerun this check.",
+    "Apply 202609050002_restore_schema_and_rpc.sql, then 202609290001_participant_names_admin.sql in the project SQL Editor, then rerun this check.",
   );
 process.exitCode = failed ? 1 : 0;

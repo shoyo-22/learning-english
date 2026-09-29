@@ -34,6 +34,12 @@ for (const state of ["empty", "tables-only", "complete"] as const) {
           : (await db.query("select * from assessments")).rows;
       await db.exec(repair);
       await db.exec(repair);
+      const admin = await readFile(
+        "supabase/migrations/202609290001_participant_names_admin.sql",
+        "utf8",
+      );
+      await db.exec(admin);
+      await db.exec(admin);
       assert.deepEqual(
         (await db.query("select * from assessments")).rows,
         before,
@@ -44,10 +50,12 @@ for (const state of ["empty", "tables-only", "complete"] as const) {
         )
       ).rows.map((r) => r.proname);
       assert.deepEqual(names, [
+        "admin_results",
         "research_summary",
         "reserve_ai_request",
         "save_assessment",
         "save_quiz",
+        "set_participant_name",
       ]);
       for (const role of ["anon", "authenticated"]) {
         await db.exec(`set role ${role}`);

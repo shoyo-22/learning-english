@@ -1,5 +1,22 @@
 import { z } from "zod";
 import { categories, levels } from "./types";
+export const participantSchema = z
+  .object({
+    name: z
+      .string()
+      .refine(
+        (value) =>
+          ![...value].some(
+            (char) => char.charCodeAt(0) < 32 || char.charCodeAt(0) === 127,
+          ),
+      )
+      .transform((value) => value.trim().replace(/ +/g, " "))
+      .pipe(z.string().min(2).max(40)),
+  })
+  .strict();
+export const adminLoginSchema = z
+  .object({ password: z.string().min(1).max(200) })
+  .strict();
 export const answerSchema = z
   .object({
     questionId: z.string().min(1).max(60),

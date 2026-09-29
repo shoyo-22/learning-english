@@ -10,10 +10,11 @@ import type {
   AssessmentResult,
   Answer,
 } from "@/lib/types";
-import { api } from "@/lib/client";
+import { api, initSession } from "@/lib/client";
+import { ParticipantName, type ParticipantState } from "./participant-name";
 import { ConfirmAction } from "./confirm-action";
 import { Notice } from "./ui";
-type SessionState = {
+type SessionState = ParticipantState & {
   storage: boolean;
   assessments: AssessmentResult[];
   canTakeAfter: boolean;
@@ -51,7 +52,8 @@ export function Assessment({ onSaved }: { onSaved: () => void }) {
   }
   useEffect(() => {
     let live = true;
-    api<SessionState>("/api/session")
+    initSession()
+      .then(() => api<SessionState>("/api/session"))
       .then((s) => {
         if (live) setState(s);
       })
@@ -63,7 +65,8 @@ export function Assessment({ onSaved }: { onSaved: () => void }) {
     };
   }, []);
   async function start(t: AssessmentType) {
-    if (locked.current) return;
+    if (locked.current || !state?.participantReady || !state.participantName)
+      return;
     locked.current = true;
     setBusy(true);
     setError("");
@@ -234,6 +237,25 @@ export function Assessment({ onSaved }: { onSaved: () => void }) {
         </div>
       ) : (
         <>
+          <ParticipantName
+            sessionState={state}
+            onSaved={(name) =>
+              setState((previous) =>
+                previous
+                  ? {
+                      ...previous,
+                      participantName: name,
+                      participantReady: true,
+                    }
+                  : previous,
+              )
+            }
+          />
+          {!state?.participantName && (
+            <p className="muted">
+              {tr("Save your name or code before starting the test.")}
+            </p>
+          )}
           <div className="assessment-stages">
             <div className={`assessment-stage ${before ? "finished" : ""}`}>
               <span>01</span>
@@ -248,7 +270,12 @@ export function Assessment({ onSaved }: { onSaved: () => void }) {
                 <Button
                   variant="ghost"
                   className="button secondary"
-                  disabled={busy || !state?.storage}
+                  disabled={
+                    busy ||
+                    !state?.storage ||
+                    !state.participantReady ||
+                    !state.participantName
+                  }
                   onClick={() => start("before")}
                 >
                   {tr("Start Before Test")}
@@ -278,7 +305,13 @@ export function Assessment({ onSaved }: { onSaved: () => void }) {
                 <Button
                   variant="ghost"
                   className="button secondary"
-                  disabled={busy || !before || !state?.canTakeAfter}
+                  disabled={
+                    busy ||
+                    !before ||
+                    !state?.canTakeAfter ||
+                    !state.participantReady ||
+                    !state.participantName
+                  }
                   onClick={() => start("after")}
                 >
                   {tr("Start After Test")}

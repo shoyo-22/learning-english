@@ -6,7 +6,7 @@ An educational research application for **“The Importance of ChatGPT in Learni
 
 ## Run locally
 
-Prerequisites: Node.js 22.13+ (recommended: **24 LTS**, also specified in `.nvmrc`) and npm. Docker is needed only for the full local database mode. No OpenAI account, student/teacher login, or hosted Supabase project is needed for either local mode.
+Prerequisites: Node.js 22.13+ (recommended: **24 LTS**, also specified in `.nvmrc`) and npm. Docker is needed only for the full local database mode. No OpenAI account, student account, or hosted Supabase project is needed for either local mode. Teachers use a separate password-protected `/admin` panel when storage is configured.
 
 ```sh
 npm ci
@@ -39,20 +39,22 @@ All application credentials stay on the server. No `NEXT_PUBLIC_*` variables or 
 | `SESSION_SECRET`            | At least 32 random characters; required alongside Supabase configuration for durable signed anonymous cookies. Generate with `openssl rand -hex 32`. |
 | `APP_URL`                   | Optional canonical origin, such as `https://your-project.vercel.app`. Recommended in production; must match the URL the user visits.                 |
 
+`ADMIN_PASSWORD` enables `/admin` when the database is configured. Use a private password of 12–200 characters; there is no default. `setup:local` generates a random password in `.env.local` without printing it, and preserves existing values. A fresh demo setup leaves it empty. Admin sessions last 8 hours; changing the password and restarting the app revokes existing sessions.
+
 Never commit `.env.local`. Restart the development server after changing environment values. Do not paste secrets into project source or client code. In development without a session secret, a temporary signing key is used and no database writes are enabled; these anonymous cookies are not durable across server restarts.
 
 ## Supabase setup
 
 1. Create a Supabase PostgreSQL project.
 2. Open the SQL Editor with the project owner account.
-3. For a new database, run the files in `supabase/migrations/` in order (or use your linked Supabase CLI migration workflow). If setup is missing, incomplete, or was applied manually, run **`supabase/migrations/202609050002_restore_schema_and_rpc.sql`** as one complete query. This recovery migration creates missing tables, restores the four server functions and permissions, and refreshes the API schema cache. It is transactional, preserves existing rows, can run repeatedly, and aborts on missing or incompatible column types. The original migration remains unchanged. If switching from SQL Editor to CLI-managed migrations, reconcile the migration history before pushing; do not rerun the initial migration against existing tables.
+3. For a new database, run the files in `supabase/migrations/` in order (or use your linked Supabase CLI migration workflow). If setup is missing, incomplete, or was applied manually, run **`supabase/migrations/202609050002_restore_schema_and_rpc.sql`** as one complete query. This recovery migration creates missing tables, restores the four server functions and permissions, and refreshes the API schema cache. It is transactional, preserves existing rows, can run repeatedly, and aborts on missing or incompatible column types. Then apply `supabase/migrations/202609290001_participant_names_admin.sql` to add participant names and protected admin results. Both migrations must be applied before collecting named tests. The original migration remains unchanged. If switching from SQL Editor to CLI-managed migrations, reconcile the migration history before pushing; do not rerun the initial migration against existing tables.
 4. Add the URL, service-role key, and session secret to `.env.local` or your deployment environment.
-5. Restart the app and run `npm run db:check`. This read-only check verifies all seven tables with zero-row GET requests and the aggregate RPC, without printing credentials or participant records.
+5. Restart the app and run `npm run db:check`. This read-only check verifies all seven tables with zero-row GET requests and the aggregate/admin RPCs, without printing credentials or participant records.
 6. For a write smoke test, run the **whole** `supabase/tests/smoke_rollback.sql` in SQL Editor. It checks server permissions, assessment ordering, first-submission preservation, quiz retries, and paired aggregation, then rolls back every fixture row. If execution fails, issue `ROLLBACK` before reusing that SQL connection. Only real study participation should create lasting assessment results.
 
 Tables:
 
-- `anonymous_sessions`: signed-cookie browser identifiers, creation and last-seen times.
+- `anonymous_sessions`: signed-cookie browser identifiers, participant names or teacher-issued codes, creation and last-seen times.
 - `quiz_sessions`: completed practice runs with server-computed scores.
 - `quiz_attempts`: question IDs and correctness for completed runs, written atomically with the run. Raw student answers are not stored.
 - `assessments`: one immutable first Before and After submission per browser and assessment version.
@@ -66,7 +68,7 @@ RLS is enabled on every table. Anonymous and authenticated browser roles cannot 
 
 Project title, author, supervisor, objectives, hypothesis, and conclusion are centralized in `src/data/project.ts`. The illustrative chart values are in `demoResearch` in the same file. They are **never seeded into PostgreSQL** and always remain labeled as demo data. Change or remove them there.
 
-Actual research records are maintained through the protected Supabase project dashboard, not an unprotected student-facing editor. For authorized corrections, edit the relevant record in `assessments`, preserving its anonymous identifier, assessment version, and provenance in your separate research log. Keep `total_score` equal to the mean of the four skill scores. Export the `assessments` table as CSV from Supabase for your research dataset. Do not insert illustrative demo scores into the real dataset. App submissions themselves cannot overwrite existing assessments.
+Teachers view individual assessment and practice results in `/admin`, including skill scores, search, sorting, and CSV exports. The panel refreshes every 30 seconds while visible. Public `/research` shows only aggregate results without names. Actual research records can be corrected only through the protected Supabase project dashboard. For authorized corrections, edit the relevant record in `assessments`, preserving its anonymous identifier, assessment version, and provenance in your separate research log. Keep `total_score` equal to the mean of the four skill scores. Export the `assessments` table as CSV from Supabase for your research dataset. Do not insert illustrative demo scores into the real dataset. App submissions themselves cannot overwrite existing assessments.
 
 The grouped chart uses actual matched database records as soon as a pair exists; demo values are never mixed with those records. The database function `research_summary()` computes aggregate metrics, so the browser does not fetch entire tables.
 
@@ -97,7 +99,7 @@ Put real settings in `.env.local`, never `.env.example`. Next.js does not load `
 - Differences are **percentage points**. Browser identifiers are not verified people. Visits, practice activity, and assessment pairs are separate metrics.
 - One recorded visit means one app initialization per tab session where sessionStorage is available. It is not a verified person count. Question-answer events may include abandoned practice; the dashboard’s question count explicitly describes questions in completed practice.
 - No control group, no standardized CEFR calibration, no psychometric equating, and only two items per skill: report these limitations during the defense. Before/After differences do not establish causation.
-- Anonymous participation is optional. The same browser and cookies must be retained. The research database does not collect names, email, phone, exact location, or IP addresses. Infrastructure providers may keep their own operational logs.
+- Participation is optional. Assessments require a saved name or teacher-issued code; names are optional for practice. Only the teacher sees names and individual results. The same browser and cookies must be retained. Names can be changed and then apply to all results from that browser. Matching names on different devices do not merge participants, so admin rows also show a short browser code. The research database does not collect email, phone, exact location, or IP addresses. Infrastructure providers may keep their own operational logs.
 
 ## Code map
 
@@ -155,7 +157,7 @@ The connected HTTP test reads `/api/research`; it does not create synthetic part
 
 1. Push the repository to your own Git hosting project and import it into Vercel.
 2. Select the Next.js preset and Node.js 22 or newer. Use `npm run build` and the default Next.js output; this app is not a static export.
-3. Apply the Supabase migration before enabling research workflows.
+3. Apply all Supabase migrations in order before enabling research workflows. Set `ADMIN_PASSWORD` to enable teacher access.
 4. Set the server environment variables in Vercel. Set `APP_URL` to the production origin or leave it unset for deployments with different preview origins; in that case requests must match the incoming Host header.
 5. Deploy. Check the demo assistant and run `db:check` using the intended server configuration. Verify the complete Before → practice → After write flow on a separate staging/test database. In the real research database, lasting submissions must come from genuine participation; do not create fictional pairs as a deployment check.
 

@@ -68,18 +68,39 @@ test("switching managed local modes retains browser signing identity and private
     );
     assert.equal(config.SESSION_SECRET, demoSecret);
     assert.equal(config.SUPABASE_URL, "");
+    assert.equal(config.ADMIN_PASSWORD, "");
     await writeManagedConfig(directory, "local", status);
     config = parseEnv(await readFile(join(directory, ".env.local"), "utf8"));
     assert.equal(config.SESSION_SECRET, demoSecret);
     assert.equal(config.SUPABASE_SERVICE_ROLE_KEY, status.SECRET_KEY);
     assert.equal(config.APP_URL, "");
+    const adminPassword = config.ADMIN_PASSWORD;
+    assert.ok(adminPassword);
+    assert.equal(adminPassword.length, 24);
+    await writeManagedConfig(directory, "local", status);
+    assert.equal(
+      parseEnv(await readFile(join(directory, ".env.local"), "utf8"))
+        .ADMIN_PASSWORD,
+      adminPassword,
+    );
     await writeManagedConfig(directory, "demo");
     config = parseEnv(await readFile(join(directory, ".env.local"), "utf8"));
     assert.equal(config.SUPABASE_SERVICE_ROLE_KEY, "");
     assert.equal(config.SESSION_SECRET, demoSecret);
+    assert.equal(config.ADMIN_PASSWORD, adminPassword);
   });
   const first = configValues("local", status);
   assert.equal(first.SESSION_SECRET.length, 64);
+  assert.equal(first.ADMIN_PASSWORD.length, 24);
+  assert.notEqual(
+    first.ADMIN_PASSWORD,
+    configValues("local", status).ADMIN_PASSWORD,
+  );
+  assert.equal(
+    configValues("local", status, { ADMIN_PASSWORD: "existing-password" })
+      .ADMIN_PASSWORD,
+    "existing-password",
+  );
   assert.notEqual(
     first.SESSION_SECRET,
     configValues("local", status).SESSION_SECRET,

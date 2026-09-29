@@ -13,6 +13,8 @@ export async function GET() {
     if (!dbConfigured())
       return json({
         storage: false,
+        participantName: null,
+        participantReady: false,
         assessments: [],
         practice: [],
         canTakeAfter: false,
@@ -52,7 +54,30 @@ export async function GET() {
       .order("completed_at", { ascending: false })
       .limit(5);
     if (practiceError) throw practiceError;
-    return json({ storage: true, assessments: data, practice, canTakeAfter });
+    // An unapplied name migration must not break practice history or assessment status.
+    let participantName: string | null = null;
+    let participantReady = false;
+    try {
+      const { data: participant, error: participantError } = await db()
+        .from("anonymous_sessions")
+        .select("display_name")
+        .eq("session_id", id)
+        .single();
+      if (!participantError && participant) {
+        participantReady = true;
+        participantName = participant.display_name;
+      }
+    } catch {
+      /* Keep the existing session response usable during storage failures. */
+    }
+    return json({
+      storage: true,
+      assessments: data,
+      practice,
+      canTakeAfter,
+      participantName,
+      participantReady,
+    });
   } catch (e) {
     return failure(e);
   }

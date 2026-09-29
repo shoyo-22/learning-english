@@ -3084,3 +3084,187 @@ h3[tabindex="-1"] {
   scroll-margin-top: 100px;
   outline: none;
 }
+
+/* Participant identity and the protected teacher workspace. */
+.participant-panel {
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.participant-name {
+  margin-bottom: 24px;
+}
+.participant-name > p {
+  margin: 0 0 12px;
+}
+.participant-name .button-row p {
+  overflow-wrap: anywhere;
+}
+.participant-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: end;
+}
+.participant-form > div {
+  flex: 1 1 220px;
+  max-width: 400px;
+}
+.participant-form label,
+.admin-login label,
+.admin-search label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+.admin-login {
+  max-width: 460px;
+  padding: 28px;
+  display: grid;
+  gap: 16px;
+}
+.admin-login h2,
+.admin-login label {
+  margin: 0;
+}
+.admin-dashboard {
+  display: grid;
+  gap: 24px;
+  min-width: 0;
+}
+.admin-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+.admin-toolbar h2,
+.admin-toolbar p {
+  margin: 0;
+}
+.admin-toolbar p {
+  margin-top: 8px;
+}
+.admin-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.admin-summary .panel {
+  padding: 20px;
+}
+.admin-summary p {
+  margin: 0 0 8px;
+}
+.admin-summary strong {
+  font-size: 27px;
+  font-variant-numeric: tabular-nums;
+}
+.admin-summary small {
+  display: block;
+  color: var(--muted);
+  margin-top: 6px;
+}
+.admin-search {
+  max-width: 420px;
+}
+.admin-tab {
+  display: grid;
+  gap: 18px;
+  padding-top: 16px;
+  min-width: 0;
+}
+.admin-tab[data-state="inactive"] {
+  display: none;
+}
+.admin-sort {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+.admin-sort select {
+  background: var(--card);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+.admin-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--card);
+}
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 14px;
+}
+.admin-table th,
+.admin-table td {
+  padding: 18px;
+  vertical-align: top;
+  border-bottom: 1px solid var(--line);
+}
+.admin-table thead {
+  background: var(--surface-muted);
+}
+.admin-table tbody tr:last-child > * {
+  border-bottom: 0;
+}
+.admin-table th[scope="row"] {
+  min-width: 150px;
+  max-width: 240px;
+  overflow-wrap: anywhere;
+}
+.admin-table td {
+  min-width: 125px;
+}
+.admin-id {
+  display: block;
+  color: var(--muted);
+  font-weight: 400;
+  margin-top: 6px;
+}
+.admin-total {
+  font-size: 20px;
+}
+.admin-skills {
+  min-width: 170px;
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 8px;
+}
+.admin-skills > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.admin-skills dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+.admin-score-time {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 8px;
+}
+@media (max-width: 640px) {
+  .admin-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .admin-summary .panel {
+    padding: 14px;
+  }
+  .admin-summary strong {
+    font-size: 23px;
+  }
+  .participant-panel,
+  .admin-login {
+    padding: 18px;
+  }
+}
