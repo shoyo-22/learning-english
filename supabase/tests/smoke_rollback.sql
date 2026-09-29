@@ -22,13 +22,14 @@ begin
   assert not has_table_privilege('authenticated',item.oid,'SELECT,INSERT,UPDATE,DELETE'), 'authenticated table access';
  end loop;
  for item in select p.oid from pg_proc p join pg_namespace n on n.oid=p.pronamespace
- where n.nspname='public' and p.proname in ('save_quiz','save_assessment','research_summary','reserve_ai_request')
+ where n.nspname='public' and p.proname in ('save_quiz','save_assessment','research_summary','reserve_ai_request','set_participant_name','admin_results')
  loop
   assert not has_function_privilege('anon',item.oid,'EXECUTE'), 'anon RPC access';
   assert not has_function_privilege('authenticated',item.oid,'EXECUTE'), 'authenticated RPC access';
   assert has_function_privilege('service_role',item.oid,'EXECUTE'), 'missing server RPC access';
  end loop;
  insert into public.anonymous_sessions(session_id) values(sid);
+ assert public.set_participant_name(sid,'  Smoke   participant  ')='Smoke participant', 'Name normalization';
  begin
   perform public.save_assessment(sid,'after','v1',100,100,100,100,100);
   raise exception 'After unexpectedly accepted without Before';
@@ -58,6 +59,10 @@ begin
  if (baseline->>'pairs')::bigint=0 then
   assert (result->>'before')::numeric=50 and (result->>'after')::numeric=100 and (result->>'difference')::numeric=50, 'Incorrect paired scores';
  end if;
+ result := public.admin_results('v1',50000,50000);
+ assert (result->'summary'->>'pairs')::bigint=(baseline->>'pairs')::bigint+1, 'Admin pair count';
+ assert exists(select 1 from jsonb_array_elements(result->'participants') p where p->>'shortId'=left(sid::text,6) and p->>'name'='Smoke participant' and (p->>'difference')::numeric=50), 'Named admin result missing';
+ assert position(sid::text in result::text)=0, 'Admin response exposed full session identifier';
 end;
 $test$;
 rollback;

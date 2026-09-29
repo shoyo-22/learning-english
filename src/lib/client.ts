@@ -1,12 +1,27 @@
-export async function api<T>(path: string, body?: unknown): Promise<T> {
+export class ApiClientError extends Error {
+  constructor(
+    message: string,
+    public status: number,
+  ) {
+    super(message);
+  }
+}
+export async function api<T>(
+  path: string,
+  body?: unknown,
+  options?: { method?: string; signal?: AbortSignal },
+): Promise<T> {
   let response: Response;
   try {
     response = await fetch(path, {
-      method: body === undefined ? "GET" : "POST",
+      method: options?.method ?? (body === undefined ? "GET" : "POST"),
+      cache: "no-store",
       headers:
         body === undefined ? undefined : { "Content-Type": "application/json" },
       body: body === undefined ? undefined : JSON.stringify(body),
-      signal: AbortSignal.timeout(45000),
+      signal: options?.signal
+        ? AbortSignal.any([options.signal, AbortSignal.timeout(45000)])
+        : AbortSignal.timeout(45000),
     });
   } catch {
     throw new Error("The connection was interrupted. Please try again.");
@@ -17,7 +32,10 @@ export async function api<T>(path: string, body?: unknown): Promise<T> {
     );
   });
   if (!response.ok)
-    throw new Error(data.error || "Something went wrong. Please try again.");
+    throw new ApiClientError(
+      data.error || "Something went wrong. Please try again.",
+      response.status,
+    );
   return data as T;
 }
 let initialized: Promise<{ storage: boolean } | undefined> | undefined;

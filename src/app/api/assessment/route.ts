@@ -1,6 +1,7 @@
 import { assessmentQuestions, assessmentVersion } from "@/data/assessments";
 import { scoreAnswers } from "@/lib/scoring";
 import { assessmentSchema } from "@/lib/validation";
+import { storageError } from "@/lib/admin";
 import {
   body,
   session,
@@ -38,6 +39,17 @@ export async function POST(request: Request) {
       throw new ApiError(400, "Answer every assessment question exactly once.");
     }
     await ensureSession(id);
+    const { data: participant, error: participantError } = await db()
+      .from("anonymous_sessions")
+      .select("display_name")
+      .eq("session_id", id)
+      .single();
+    if (participantError) throw storageError(participantError);
+    if (!participant?.display_name)
+      throw new ApiError(
+        409,
+        "Save your name or code before starting the test.",
+      );
     const { data: result, error } = await db().rpc("save_assessment", {
       p_session: id,
       p_type: data.type,

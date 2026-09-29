@@ -94,17 +94,25 @@ export async function ensureSession(id: string) {
       "Research storage is temporarily unavailable. Please try again.",
     );
 }
+export function assertSameOrigin(request: Request) {
+  const origin = request.headers.get("origin");
+  let matchesOrigin = !origin;
+  try {
+    if (origin)
+      matchesOrigin = process.env.APP_URL
+        ? origin === new URL(process.env.APP_URL).origin
+        : new URL(origin).host === request.headers.get("host");
+  } catch {
+    matchesOrigin = false;
+  }
+  if (!matchesOrigin) throw new ApiError(403, "This request is not allowed.");
+}
 export async function body<T>(
   request: Request,
   schema: z.ZodType<T>,
+  validationMessage = "Please check your answers and try again.",
 ): Promise<T> {
-  const origin = request.headers.get("origin");
-  const matchesOrigin =
-    !origin ||
-    (process.env.APP_URL
-      ? origin === new URL(process.env.APP_URL).origin
-      : new URL(origin).host === request.headers.get("host"));
-  if (!matchesOrigin) throw new ApiError(403, "This request is not allowed.");
+  assertSameOrigin(request);
   if (!request.headers.get("content-type")?.includes("application/json"))
     throw new ApiError(415, "Please send a JSON request.");
   if (Number(request.headers.get("content-length") || 0) > 24000)
@@ -131,8 +139,7 @@ export async function body<T>(
     throw new ApiError(400, "The request could not be read.");
   }
   const parsed = schema.safeParse(raw);
-  if (!parsed.success)
-    throw new ApiError(400, "Please check your answers and try again.");
+  if (!parsed.success) throw new ApiError(400, validationMessage);
   return parsed.data;
 }
 const windows = new Map<string, { count: number; until: number }>();

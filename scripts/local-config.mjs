@@ -65,6 +65,9 @@ export function configValues(mode, status, existing = {}) {
       existing.SESSION_SECRET ||
       (mode === "demo" ? demoSecret : randomBytes(32).toString("hex")),
     APP_URL: "",
+    ADMIN_PASSWORD:
+      existing.ADMIN_PASSWORD ||
+      (mode === "local" ? randomBytes(12).toString("hex") : ""),
     ENGLISH_LAB_LOCAL_MODE: mode,
   };
 }

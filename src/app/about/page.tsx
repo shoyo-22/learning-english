@@ -83,7 +83,7 @@ export default async function Page() {
             <h3>{tr("Learning with care")}</h3>
             <p>
               {tr(
-                "We use an anonymous browser identifier to associate practice and assessment results. We do not ask for your name, email, location, or a student account.",
+                "We link your name or teacher-issued code to this browser’s saved results. Only the teacher can see individual results; the public research page shows totals without names. We do not ask for email, location, or a student account.",
               )}
             </p>
             <p>

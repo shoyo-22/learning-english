@@ -90,7 +90,9 @@ export function Header() {
   const { tr } = useLocale();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const current = links.find((link) => link.href === pathname);
+  const current = [...links, { name: "Administrator", href: "/admin" }].find(
+    (link) => link.href === pathname,
+  );
   return (
     <>
       <aside className="workspace-sidebar">

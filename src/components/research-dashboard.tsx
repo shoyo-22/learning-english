@@ -77,7 +77,7 @@ export function ResearchDashboard() {
           <span className="status-dot" />
           {tr(
             summary
-              ? "LIVE DATABASE · ANONYMOUS RECORDS"
+              ? "LIVE DATABASE · AGGREGATE RESULTS"
               : "TRANSPARENT DATA. HONEST CONCLUSIONS.",
           )}
         </span>
@@ -108,7 +108,7 @@ export function ResearchDashboard() {
               icon: Users,
               label: "Completed assessment pairs",
               value: summary ? number(summary.pairs) : "—",
-              note: "Matched anonymous browser identifiers",
+              note: "Matched browser identifiers",
             },
             {
               icon: Target,
@@ -280,7 +280,7 @@ export function ResearchDashboard() {
         />
         <div className="usage-grid">
           {[
-            ["Anonymous browser identifiers", summary?.browsers],
+            ["Browser identifiers", summary?.browsers],
             ["Recorded visits", summary?.visits],
             ["Completed practice sessions", summary?.practiceSessions],
             ["Questions in completed practice", summary?.questionsAnswered],
@@ -348,7 +348,7 @@ export function ResearchDashboard() {
         </div>
         <Notice>
           {tr(
-            "Exploratory methodology: voluntary, anonymous participation; two items per skill; no control group; no enforced study duration. This is not a standardized CEFR test. Larger samples, independently rated speaking/writing tasks, and a control group would strengthen future research.",
+            "Exploratory methodology: voluntary participation with a name or teacher-issued code; two items per skill; no control group; no enforced study duration. This is not a standardized CEFR test. Larger samples, independently rated speaking/writing tasks, and a control group would strengthen future research.",
           )}
         </Notice>
       </section>
